@@ -196,8 +196,6 @@ local function RegisterWithWhip()
     exports.whip_core:OnVehicleDataChange(TUNING_TURBO_KEY, function(c)
         CreateThread(function() followTurbo(c.vehicleId, (not c.cleared) and c.value or nil) end)
     end, { table = true, now = true })
-
-    print('[whip_autos] turbo system loaded')
 end
 
 -- Runs once whip_core is ready, whichever of the two starts first.

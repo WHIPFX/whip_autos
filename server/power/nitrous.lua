@@ -90,7 +90,7 @@ local function registerNitroStat()
             noCritical    = true,
         },
     })
-    if not ok then print(('[whip_autos] could not register the nitro stat: %s'):format(tostring(err))) end
+    if not ok then Whip.startProblem('could not register the nitro stat, so there is no nitrous: %s', tostring(err)) end
     return ok
 end
 
@@ -163,8 +163,6 @@ local function RegisterWithWhip()
         _flaming[source] = netId
         relayFlames(source, netId, true)
     end)
-
-    print('[whip_autos] nitrous ready — item, vehicle stat and gauge registered')
 end
 
 Whip.register(RegisterWithWhip)

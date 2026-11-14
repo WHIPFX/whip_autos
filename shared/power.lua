@@ -121,8 +121,8 @@ local function readStages()
             seen[psi] = true
             list[#list + 1] = { psi = psi, price = math.floor(price) }
         else
-            print(('[whip_autos] Config.Turbo.Stages[%d] is not { psi = 1-%d, price = 0 or more }, or repeats a psi: left out')
-                :format(i, PowerTurbo.PSI_HIGH))
+            Whip.startProblem('Config.Turbo.Stages[%d] is not { psi = 1-%d, price = 0 or more }, or repeats a psi: left out',
+                i, PowerTurbo.PSI_HIGH)
         end
     end
     table.sort(list, function(a, b) return a.psi < b.psi end)

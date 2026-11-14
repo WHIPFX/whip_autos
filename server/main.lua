@@ -592,4 +592,5 @@ exports('GetOpenSessions', function()
     return out
 end)
 
-print('[whip_autos] whiplash server ready')
+-- One line in the console once everything has registered: started, or what went wrong.
+Whip.sayStarted()

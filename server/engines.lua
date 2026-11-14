@@ -80,20 +80,17 @@ end
 local function load()
     local raw = LoadResourceFile(GetCurrentResourceName(), ENGINE_FILE)
     if not raw or raw == '' then
-        print('[whip_autos] no engines.json yet — run /whiplashengines in game to build the engine list')
+        Whip.startProblem('there is no engines.json, so engine swaps have nothing to offer: run /whiplashengines in game to build the engine list')
         return
     end
     local ok, data = pcall(json.decode, raw)
     if not ok or type(data) ~= 'table' or type(data.engines) ~= 'table' then
-        print('[whip_autos] engines.json is present but unreadable — ignoring')
+        Whip.startProblem('engines.json cannot be read, so engine swaps have nothing to offer: run /whiplashengines in game to build it again')
         return
     end
     store.engines = data.engines
     store.builtAt, store.builtBy = data.builtAt, data.builtBy
     listCache = nil
-    local n = 0
-    for _ in pairs(store.engines) do n = n + 1 end
-    print(('[whip_autos] engine list: %d engines (built %s)'):format(n, tostring(store.builtAt or '?')))
 end
 
 local function save()
