@@ -9,7 +9,8 @@ whip_core's docs (`docs.html#autos-patterns`).
 
 - **Needs:** whip_core. Nothing to add to the database.
 - **Two resources:** `whip_autos` (the shop) and `whip_autos_shop` (the WHIPLASH building in Burton, map files only).
-  Both come in the `[whip]` folder, and `ensure [whip]` starts them. If you list resources one by one instead:
+  WHIP's txAdmin recipe installs both and adds `ensure whip_autos` and `ensure whip_autos_shop` to server.cfg. If you list
+  resources one by one instead:
   `ensure whip_autos` after whip_core, and `ensure whip_autos_shop`.
 - **The building replaces Los Santos Customs in Burton.** It streams 12 of Rockstar's `bt1_02` files, so another map
   of that building (or one that streams those files) will clash with it.
