@@ -31,6 +31,8 @@ The shop building in Burton is a separate resource, [whip_autos_shop](https://gi
 - `whip_core`.
 - [whip_autos_shop](https://github.com/WHIPFX/whip_autos_shop) for the shop building. Without it, move the shop floor
   in the settings.
+- [chameleon_paint](https://github.com/WHIPFX/chameleon_paint) for the Chameleon paints' colour ramps. Without it those
+  paints turn a car black.
 
 ## Installation
 
@@ -106,7 +108,7 @@ The Object Viewer (`/w`, **G** on a saved car) has **Open Whiplash**, which open
 | The shop won't open | The car is on the lift (**Floor** and **Floor size**) and the player is driving it. Someone else may be working on it. |
 | Only Repair, or no Performance and Tuning | **Who can modify a car**: the player doesn't own it. |
 | Paid, but the part isn't on | The server console prints `refunded` or `COULD NOT REFUND`. The activity log lists each sale as "Whiplash customisation". |
-| Chameleon paints come out black | Another resource streams `vehicle_paint_ramps.ytd`, or whip_autos' `stream/` folder is missing. |
+| Chameleon paints come out black | `chameleon_paint` isn't started, or another resource streams `vehicle_paint_ramps.ytd` too. |
 | A turbo does nothing | Its psi is missing from `Config.Turbo.Stages`, or **Torque per psi** is 0. |
 | The engine list is missing add-on cars | Run `/whiplashengines`. |
 
@@ -125,7 +127,7 @@ whip_autos is licensed under the GNU LGPL 3.0; see `COPYING.LESSER`, and `COPYIN
 `NOTICE.md` says what the licence doesn't cover, including three.js (MIT) and the Inter and Rajdhani fonts (SIL Open
 Font License 1.1); `whip_core`'s `NOTICE.md` is the full list.
 
-The Chameleon paint ramps (`vehicle_paint_ramps.ytd` in `stream/` and `stream_enhanced/`) are WildBrick142's
-[Chameleon Paint [Add-On] 2.0](https://www.gta5-mods.com/misc/chameleon-paint-add-on), unchanged, with thanks to
-Disquse and Rockstar Games. Their author's terms say they must never be sold or monetised, so a paid bundle must leave
-this file out.
+The Chameleon paints' colour ramps aren't in whip_autos: they're the separate resource
+[chameleon_paint](https://github.com/WHIPFX/chameleon_paint), WildBrick142's
+[Chameleon Paint [Add-On] 2.0](https://www.gta5-mods.com/misc/chameleon-paint-add-on) under its author's terms. It must
+never be sold or monetised, so a paid bundle must leave it out, and take the Chameleon paints out of `config.lua` too.

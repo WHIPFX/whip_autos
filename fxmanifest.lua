@@ -87,11 +87,9 @@ files {
 -- The WHIPLASH shop building in Burton is the separate resource whip_autos_shop (map files only). It is not in here so
 -- that restarting whip_autos, or whip_core (which restarts whip_autos with it), never unloads an interior under players.
 
--- stream/vehicle_paint_ramps.ytd (streamed by itself): the colour ramps GTA's Chameleon paints
--- (161-222) draw from. Legacy builds do not ship them, and without them the paints turn the car black.
--- stream_enhanced/ holds the same textures built for GTA V Enhanced, which streams it instead of stream/.
--- The fix and the gradients are WildBrick142's: Chameleon Paint [Add-On] 2.0, unchanged
--- (https://www.gta5-mods.com/misc/chameleon-paint-add-on), with thanks to Disquse (gradient loading)
--- and Rockstar Games. Credit stays with it, and it must never be sold or monetised.
+-- The colour ramps GTA's Chameleon paints (161-222) draw from are the separate resource chameleon_paint:
+-- WildBrick142's Chameleon Paint [Add-On] 2.0, reuploaded unchanged, which the recipe installs in [assets]. It is the
+-- author's work under the author's terms, so it ships on its own rather than in here. Without it those paints turn a
+-- car black.
 
 dependencies { 'whip_core' }
