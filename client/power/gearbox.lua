@@ -604,7 +604,7 @@ AddEventHandler('whip_core:vehicle:entered', function(d)
 end)
 AddEventHandler('whip_core:vehicle:exited', function() drive(nil) end)
 Whip.register(function()
-    onPad = Whip.call('IsControllerActive') == true
+    onPad = Whip.core:IsControllerActive() == true
     drive(AutosDrivenCar())
 end)
 AddEventHandler('onResourceStop', function(res)

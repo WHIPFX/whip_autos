@@ -99,7 +99,7 @@ end
 ---@param vehicleId number
 ---@return table|nil grant, number|nil netId
 function DirectorGoals.grantFor(src, vehicleId)
-    local v = Whip.call('GetVehicle', vehicleId)
+    local v = Whip.core:GetVehicle(vehicleId)
     local ent = type(v) == 'table' and v.entity or nil
     if not ent then return nil end
     local netId = NetworkGetNetworkIdFromEntity(ent)
@@ -206,13 +206,13 @@ local function watch(job)
         if jobs[job.id] ~= job then return end
         if job.endsAt and GetGameTimer() >= job.endsAt then return finish(job, 'outOfTime') end
 
-        local v = Whip.call('GetVehicle', job.vehicleId)
+        local v = Whip.core:GetVehicle(job.vehicleId)
         local ent = type(v) == 'table' and v.entity or nil
         if not ent then
             -- A few seconds' grace: whip takes a car in and puts it out again (a new owner, a claim).
             goneFor = goneFor + 1
             if goneFor >= 5 then return finish(job, 'lost') end
-        elseif Whip.call('IsVehicleWrecked', job.vehicleId) == true then
+        elseif Whip.core:IsVehicleWrecked(job.vehicleId) == true then
             wreckedFor = wreckedFor + 1
             if wreckedFor >= 3 then return finish(job, 'lost') end
         else
@@ -342,7 +342,7 @@ local function startGoal(card)
     local carW = card.props.car
     local made = type(carW) == 'table' and card:made(carW.id) or nil
     local vehicleId = type(made) == 'table' and made.vehicleId or nil
-    local v = vehicleId and Whip.call('GetVehicle', vehicleId)
+    local v = vehicleId and Whip.core:GetVehicle(vehicleId)
     if not (type(v) == 'table' and v.entity) then
         card:log('the car is not out in the world')
         return 'lost'

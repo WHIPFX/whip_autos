@@ -35,11 +35,11 @@ local touched = {}
 --- How often network control of the car is re-taken during a visit (another client can take it).
 local CONTROL_TICK_MS = 1000
 
--- Calls into whip_core go through Whip.call (see fxmanifest.lua); opening waits on the server.
+-- Calls into whip_core go through Whip.core (see fxmanifest.lua); opening waits on the server.
 
 --- Tells the player why their visit ended.
 local function notify(msg)
-    Whip.call('Notify', msg, 'error')
+    Whip.core:Notify(msg, 'error')
 end
 
 -- What the shop holds off (whip_core BlockControls)
@@ -53,7 +53,7 @@ end
 ---   73, 74, 76, 80                         a pad's buttons in a car (the pad works the shop's screen)
 --- Steering and Backspace stay free.
 local function blockShopControls()
-    Whip.call('BlockControls', 'shop', {
+    Whip.core:BlockControls('shop', {
         groups   = { 'move', 'combat', 'vehicleCombat', 'driveBy', 'look', 'radio', 'weaponWheel' },
         controls = frozen and { 72, 73, 74, 75, 76, 80 } or { 71, 72, 73, 74, 75, 76, 80 },
     })
@@ -72,7 +72,7 @@ function Session.revving() return frozen end
 local function takeControl(veh, attempts)
     -- The world builder's copy is this game's own: nobody else has it to take.
     if builder or NetworkHasControlOfEntity(veh) then return true end
-    return Whip.call('TakeVehicleControl', { entity = veh }, { attempts = attempts or 3, wait = 600 }) == true
+    return Whip.core:TakeVehicleControl({ entity = veh }, { attempts = attempts or 3, wait = 600 }) == true
 end
 
 -- Opening and closing
@@ -123,13 +123,13 @@ function Session.open(opts)
     local veh = GetVehiclePedIsIn(ped, false)
 
     -- Adopts a street car the server has never seen.
-    local vId, whyNot = Whip.call('ResolveVehicle', veh)
+    local vId, whyNot = Whip.core:ResolveVehicle(veh)
     if not vId then return false, whyNot or 'This vehicle cannot be modified' end
 
     -- The claim stops two players previewing on one car and lets the server restore it if this client vanishes.
     -- claimAnywhere (/whiplash) is for whip.devtools only, claimDirector for a car the Director let them into.
     local name = director and 'whip_autos:claimDirector' or anyPlace and 'whip_autos:claimAnywhere' or 'whip_autos:claim'
-    local claimed, answer = Whip.call('Callback', name, vId)
+    local claimed, answer = Whip.core:Callback(name, vId)
     if not claimed then
         return false, answer or (director and 'Whiplash would not open here'
             or anyPlace and '/whiplash is a dev tool (whip.devtools, with developer mode on in /w)'
@@ -150,20 +150,20 @@ function Session.open(opts)
     sayMost(veh)   -- what the car takes, before the owner's shelves come off
     if repairOnly then
         catalogue = {}   -- no shelves: the counter keeps its services (Repair), and the page drops Customise
-        Whip.call('Notify', 'Only its owner can customise this car: repairs only', 'info', 6000)
+        Whip.core:Notify('Only its owner can customise this car: repairs only', 'info', 6000)
     elseif looksOnly then
         catalogue = Catalogue.looksOnly(catalogue)
-        Whip.call('Notify', 'Only its owner can change this car\'s performance and tuning', 'info', 6000)
+        Whip.core:Notify('Only its owner can change this car\'s performance and tuning', 'info', 6000)
     end
 
     -- Taken after control and before any preview, so it is how the car arrived.
-    originalProps = Whip.call('GetVehicleProperties', { entity = veh }) or nil   -- { entity = } because a bare number is a vehicleId
+    originalProps = Whip.core:GetVehicleProperties({ entity = veh }) or nil   -- { entity = } because a bare number is a vehicleId
 
     -- Holds the car's stored look: if this resource stops before close(), whip puts it back.
-    Whip.call('HoldVehicleAppearance', vId, true)
+    Whip.core:HoldVehicleAppearance(vId, true)
 
     -- whip's HUD, chat and prompts stand down for the shop's screen.
-    Whip.call('SetUIOpen', true, 'session')
+    Whip.core:SetUIOpen(true, 'session')
 
     if UI and UI.setOpen then UI.setOpen(true) end   -- ui.lua loads after this file
 
@@ -192,14 +192,14 @@ function Session.openBuilder(veh, lines)
     touched = {}
     catalogue = Catalogue.build(veh)
     sayMost(veh)
-    originalProps = Whip.call('GetVehicleProperties', { entity = veh }) or nil
+    originalProps = Whip.core:GetVehicleProperties({ entity = veh }) or nil
 
     for _, line in ipairs(lines or {}) do
         Session.preview(line.slot, line.index, line.wheelType, { engine = line.engine, stance = line.stance })
         Session.addToBasket(line)
     end
 
-    Whip.call('SetUIOpen', true, 'session')
+    Whip.core:SetUIOpen(true, 'session')
     if UI and UI.setOpen then UI.setOpen(true) end
     blockShopControls()
     Session.applyCameraChoice()
@@ -283,7 +283,7 @@ local function lightsForXenons(want)
     end
 end
 
---- Undoes everything a visit left behind. Every exit runs this, so it uses natives and Whip.call only.
+--- Undoes everything a visit left behind. Every exit runs this, so it uses natives and Whip.core only.
 ---@param revert boolean  take the previewed parts back off
 local function teardownLocal(revert)
     -- Let go first, so the car is never left frozen.
@@ -306,7 +306,7 @@ local function teardownLocal(revert)
     focusSlot = nil
 
     -- If this resource is the one stopping, whip_core sweeps the block itself.
-    Whip.call('UnblockControls', 'shop')
+    Whip.core:UnblockControls('shop')
 
     Cam.stop()
 
@@ -331,8 +331,8 @@ function Session.close(purchased)
     teardownLocal(true)
 
     -- After the revert, so whip's report on release describes the car as it now is.
-    if vId then Whip.call('HoldVehicleAppearance', vId, false) end
-    Whip.call('SetUIOpen', false, 'session')
+    if vId then Whip.core:HoldVehicleAppearance(vId, false) end
+    Whip.core:SetUIOpen(false, 'session')
 
     -- Sent after a purchase too (the server has already ended it): one exit path.
     if vId then

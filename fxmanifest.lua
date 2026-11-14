@@ -18,7 +18,7 @@ whip_updates 'WHIPFX/whip_autos'   -- whip_core checks this repository's release
 --   exports.whip_core:X(...)   inside a handler whip_core runs for us: Whip.register, SecureEvent/SecureCallback,
 --                              WatchVehicleData, OnVehicleStatChange, AddAction callbacks, a Director card's run.
 --                              A payment in a SecureEvent too, so it and what it pays for are one write.
---   Whip.call('X', ...)        in our own code: a thread, a command, a key press, an NUI callback, our own events.
+--   Whip.core:X(...)           in our own code: a thread, a command, a key press, an NUI callback, our own events.
 --                              It answers false and why where a straight call would throw (whip_core still loading).
 --   Every frame                a quick export straight, behind a started check (client/power/handling.lua).
 --

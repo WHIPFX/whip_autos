@@ -10,7 +10,7 @@
 --   Open Whiplash        an option in whip_core's object viewer (G on a saved car): the shop on that car
 
 local function notify(text, kind, ms)
-    Whip.call('Notify', text, kind or 'info', ms or 6000)
+    Whip.core:Notify(text, kind or 'info', ms or 6000)
 end
 
 -- ============================================
@@ -93,8 +93,8 @@ local function measure(name, x, y, z)
     local class = GetVehicleClassFromName(hash)
     if NO_ENGINE_CLASS[class] then return nil, 'skip' end
 
-    -- whip_core's loader (Whip.call: our own command's thread), not a per-frame loop.
-    if type(Whip.call('LoadModel', hash, LOAD_WAIT)) ~= 'number' then return nil, 'failed' end
+    -- whip_core's loader (Whip.core: our own command's thread), not a per-frame loop.
+    if type(Whip.core:LoadModel(hash, LOAD_WAIT)) ~= 'number' then return nil, 'failed' end
 
     local veh = CreateVehicle(hash, x, y, z, 0.0, false, false)
     if veh == 0 then
@@ -134,7 +134,7 @@ RegisterCommand('whiplashengines', function()
         return
     end
     CreateThread(function()
-        if Whip.call('Callback', 'whip_autos:engineDumpAllowed') ~= true then
+        if Whip.core:Callback('whip_autos:engineDumpAllowed') ~= true then
             notify('Building the engine list needs whip.devtools, with developer mode on in /w.', 'error')
             return
         end
@@ -155,7 +155,7 @@ RegisterCommand('whiplashengines', function()
                 skipped = skipped + 1
             end
             if i % 10 == 0 then
-                Whip.call('ShowText', ('Measuring engines: %d / %d (%d found)'):format(i, #models, #out))
+                Whip.core:ShowText(('Measuring engines: %d / %d (%d found)'):format(i, #models, #out))
             end
             Wait(0)
         end
@@ -165,11 +165,11 @@ RegisterCommand('whiplashengines', function()
         for c = 1, total do
             local entries = {}
             for j = (c - 1) * CHUNK_SIZE + 1, math.min(#out, c * CHUNK_SIZE) do entries[#entries + 1] = out[j] end
-            Whip.call('ShowText', ('Sending the engine list: %d / %d'):format(c, total))
+            Whip.core:ShowText(('Sending the engine list: %d / %d'):format(c, total))
             TriggerServerEvent('whip_autos:server:engineDumpChunk', { run = run, index = c, total = total, entries = entries })
             Wait(CHUNK_GAP)
         end
-        Whip.call('HideText')
+        Whip.core:HideText()
         print(('[whip_autos] engine dump: %d engines measured, %d without an engine or not a vehicle, %d failed to load')
             :format(#out, skipped, failed))
         dumping = false

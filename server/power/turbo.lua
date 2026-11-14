@@ -10,7 +10,7 @@
 --
 -- A car with a turbo from before the stages (a boost stat with no stage behind it, or GTA's own turbo part on its own)
 -- gets the OLD_TURBO_PSI stage; the old turbo item and its wrench are retired (RegisterWithWhip). The worker threads below are our own
--- code, so they call whip_core through Whip.call.
+-- code, so they call whip_core through Whip.core.
 
 local BOOST_IDLE = PowerTurbo.IDLE   -- a fitted turbo at rest (shared/power.lua)
 
@@ -39,33 +39,33 @@ local GTA_TURBO_NOTE = 'turbo_mod'
 ---@param vehicleId number
 ---@param on boolean
 local function followWithGtaTurbo(vehicleId, on)
-    local noted = Whip.call('GetVehicleData', vehicleId, GTA_TURBO_NOTE) == true
+    local noted = Whip.core:GetVehicleData(vehicleId, GTA_TURBO_NOTE) == true
 
     if not on then
         if not noted then return end   -- not ours to take away
-        local ok, err = Whip.call('SetVehicleAppearance', vehicleId, { turbo = false })
+        local ok, err = Whip.core:SetVehicleAppearance(vehicleId, { turbo = false })
         if not ok then
             print(('[whip_autos] could not switch GTA turbo off on vehicle %d: %s'):format(vehicleId, tostring(err)))
             return
         end
-        Whip.call('ClearVehicleData', vehicleId, GTA_TURBO_NOTE)
+        Whip.core:ClearVehicleData(vehicleId, GTA_TURBO_NOTE)
         return
     end
 
-    local v = Whip.call('GetVehicle', vehicleId)
+    local v = Whip.core:GetVehicle(vehicleId)
     if not v then return end
     -- Already on: put on with a Whiplash stage (no note), or ours.
     if type(v.properties) == 'table' and v.properties.turbo == true then return end
 
     -- The note first: without it a pull would leave GTA's part on.
     if not noted then
-        local ok, err = Whip.call('SetVehicleData', vehicleId, GTA_TURBO_NOTE, true)
+        local ok, err = Whip.core:SetVehicleData(vehicleId, GTA_TURBO_NOTE, true)
         if not ok then
             print(('[whip_autos] could not note GTA turbo on vehicle %d: %s'):format(vehicleId, tostring(err)))
             return
         end
     end
-    local ok, err = Whip.call('SetVehicleAppearance', vehicleId, { turbo = true })
+    local ok, err = Whip.core:SetVehicleAppearance(vehicleId, { turbo = true })
     if not ok then
         print(('[whip_autos] could not switch GTA turbo on for vehicle %d: %s'):format(vehicleId, tostring(err)))
     end
@@ -104,14 +104,14 @@ end
 ---@param vehicleId number
 ---@param data any  the car's turbo data, nil for none
 local function followTurbo(vehicleId, data)
-    local has = Whip.call('HasVehicleStat', vehicleId, 'boost') == true
+    local has = Whip.core:HasVehicleStat(vehicleId, 'boost') == true
     if TuningTurboStage(data) then
         if not has then
-            local ok, err = Whip.call('SetVehicleStat', vehicleId, 'boost', BOOST_IDLE, 'turbo:fitted')
+            local ok, err = Whip.core:SetVehicleStat(vehicleId, 'boost', BOOST_IDLE, 'turbo:fitted')
             if not ok then print(('[whip_autos] could not put the boost gauge on vehicle %d: %s'):format(vehicleId, tostring(err))) end
         end
     elseif has then
-        local ok, err = Whip.call('ClearVehicleStat', vehicleId, 'boost')
+        local ok, err = Whip.core:ClearVehicleStat(vehicleId, 'boost')
         if not ok then print(('[whip_autos] could not take the boost gauge off vehicle %d: %s'):format(vehicleId, tostring(err))) end
     end
 end
@@ -121,9 +121,9 @@ end
 ---@param vehicleId number
 ---@param why string  for the console
 local function giveOldTurboAStage(vehicleId, why)
-    -- (Whip.call answers false, not nil, when it fails: then nothing is given.)
-    if Whip.call('GetVehicleData', vehicleId, TUNING_TURBO_KEY) ~= nil then return end
-    local ok, err = Whip.call('SetVehicleData', vehicleId, TUNING_TURBO_KEY, { psi = OLD_TURBO_PSI })
+    -- (Whip.core answers false, not nil, when it fails: then nothing is given.)
+    if Whip.core:GetVehicleData(vehicleId, TUNING_TURBO_KEY) ~= nil then return end
+    local ok, err = Whip.core:SetVehicleData(vehicleId, TUNING_TURBO_KEY, { psi = OLD_TURBO_PSI })
     if ok then
         print(('[whip_autos] vehicle %d had %s: it now has the %d psi turbo'):format(vehicleId, why, OLD_TURBO_PSI))
     else
@@ -219,10 +219,10 @@ AddEventHandler('whip_core:vehicle:spawned', function(e)
     local vehicleId = tonumber(e.vehicleId)
     if not vehicleId then return end
     CreateThread(function()
-        local v = Whip.call('GetVehicle', vehicleId)
+        local v = Whip.core:GetVehicle(vehicleId)
         if not v or type(v.properties) ~= 'table' or v.properties.turbo ~= true then return end
         -- GTA's part put on by a bolt-on turbo carries the note; that car is given its stage by the boost stat above.
-        if Whip.call('GetVehicleData', vehicleId, GTA_TURBO_NOTE) == true then return end
+        if Whip.core:GetVehicleData(vehicleId, GTA_TURBO_NOTE) == true then return end
         giveOldTurboAStage(vehicleId, "GTA's turbo part from Whiplash")
     end)
 end)

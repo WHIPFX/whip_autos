@@ -43,7 +43,7 @@ local function refreshCash()
     CreateThread(function()
         repeat
             cashAgain = false
-            local cash = tonumber((Whip.call('Callback', 'whip_autos:cash')))
+            local cash = tonumber((Whip.core:Callback('whip_autos:cash')))
             -- A refusal or no answer keeps the figure the page already has.
             if open and cash then SendNUIMessage({ action = 'cash', cash = cash }) end
             if cashAgain then Wait(500) end
@@ -175,7 +175,7 @@ cb('preview', function(data)
 
     -- A tuning choice rides along: an engine's model, or a stance.
     if not Session.preview(data.slot, data.index, data.wheelType, { engine = data.engine, stance = data.stance }) then
-        Whip.call('Notify', 'Could not fit that right now', 'error')
+        Whip.core:Notify('Could not fit that right now', 'error')
     end
 end)
 
@@ -290,14 +290,14 @@ RegisterNetEvent('whip_autos:client:purchaseResult', function(ok, err, total, re
 
     -- Before the close, which lets go of the car. Said out loud if it fails: the money is already taken.
     if repairing and not Session.repair() then
-        Whip.call('Notify', 'The repair could not be applied — tell an admin', 'error')
+        Whip.core:Notify('The repair could not be applied — tell an admin', 'error')
     end
 
     -- Nothing to pay: the job paid, or only parts came off.
     if (tonumber(total) or 0) > 0 then
-        Whip.call('Notify', ('Paid $%s — enjoy the car'):format(total), 'success')
+        Whip.core:Notify(('Paid $%s — enjoy the car'):format(total), 'success')
     else
-        Whip.call('Notify', 'Fitted. Enjoy the car', 'success')
+        Whip.core:Notify('Fitted. Enjoy the car', 'success')
     end
     Session.close(true)
 end)

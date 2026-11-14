@@ -20,9 +20,9 @@ end
 --- longer exists is fine.
 ---@param vehicleId number
 local function restore(vehicleId)
-    if not Whip.call('GetVehicle', vehicleId) then return end
+    if not Whip.core:GetVehicle(vehicleId) then return end
 
-    local ok, err = Whip.call('RestoreVehicleAppearance', vehicleId)
+    local ok, err = Whip.core:RestoreVehicleAppearance(vehicleId)
     if not ok then
         print(('[whip_autos] could not restore vehicle #%s: %s')
             :format(tostring(vehicleId), tostring(err)))

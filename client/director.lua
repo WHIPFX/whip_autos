@@ -80,7 +80,7 @@ RegisterNetEvent('whip_autos:client:forceOpen', function(netId, candidates)
         end
 
         local ok, why = Session.open({ director = true })
-        if not ok and why then Whip.call('Notify', why, 'error') end
+        if not ok and why then Whip.core:Notify(why, 'error') end
     end)
 end)
 
