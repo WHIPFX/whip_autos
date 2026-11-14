@@ -94,3 +94,4 @@ files {
 -- car black.
 
 dependencies { 'whip_core' }
+whip_requires '1.0'   -- the whip_core it is built for: the setup report flags an older one
