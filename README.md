@@ -1,103 +1,130 @@
-# whip_autos (Whiplash)
+# whip_autos
 
-Whiplash, a car customisation shop: paint, parts, wheels, stance, engine swaps and more, paid for with in-game money.
-And bolt-on power: a turbo sold in stages, a nitrous bottle, every car's top speed and how long its gear changes take.
-For developers it is also whip's worked example of a shop built on whip: see "Learning from whip_autos" in
-whip_core's docs (`docs.html#autos-patterns`).
+Whiplash, the car customisation shop for [WHIP](https://github.com/WHIPFX/txAdmin-recipe). Players drive onto the
+lift, try parts on and pay in cash or by bank. It also adds turbos, a nitrous bottle, and top speed and gear-change
+settings for every car on the server.
 
-## Install
+The shop building in Burton is a separate resource, [whip_autos_shop](https://github.com/WHIPFX/whip_autos_shop).
 
-- **Needs:** whip_core. Nothing to add to the database.
-- **Two resources:** `whip_autos` (the shop) and `whip_autos_shop` (the WHIPLASH building in Burton, map files only).
-  WHIP's txAdmin recipe installs both and adds `ensure whip_autos` and `ensure whip_autos_shop` to server.cfg. If you list
-  resources one by one instead:
-  `ensure whip_autos` after whip_core, and `ensure whip_autos_shop`.
-- **The building replaces Los Santos Customs in Burton.** It streams 12 of Rockstar's `bt1_02` files, so another map
-  of that building (or one that streams those files) will clash with it.
-- **Never restart `whip_autos_shop` while players are on.** An interior unloading under them crashes their games.
-  Restart the whole server instead. Restarting whip_autos or whip_core is fine: the building stays.
-- **Upgrading an older server:** the old Turbocharger and Wrench items are retired. Every one players still have is
-  taken away (at once from everything loaded, the rest as each character, stash or car loads), logged, not refunded.
-  Cars that had the turbo keep a 15 psi one.
+## Features
 
-## How players use it
+- **Looks.** Body parts (Benny's included), wheels from 13 ranges, tyre smoke, xenon lights, window tint, extras,
+  liveries, and every GTA paint, the colour-shifting Chameleon paints included.
+- **Performance.** Engine, brakes, transmission, suspension and armour upgrades, and a turbo sold in stages from
+  5 to 30 psi.
+- **Tuning.** Engine swaps from other vehicles, stance (ride height, track, camber, wheel size and width),
+  handling (springs, dampers, anti-roll, steering lock, grip, handbrake) and drivetrain (FWD, RWD or AWD).
+- **Try before you buy.** Parts go on the car as the player browses. Leaving without paying puts the car back.
+- **Repairs.** Panels, engine and tyres, with a wash.
+- **Nitrous.** A Nitrous Bottle item, fitted from the inventory in a car or on a motorbike.
+- **Every car.** A top speed bonus, gear changes timed by class that transmission upgrades make quicker, and a
+  gearbox computer that shifts like an automatic for players on a controller.
+- **Ownership rules.** Let anyone work on any car, or keep performance and tuning, or everything but repairs, to the
+  car's owner.
+- **Safe payments.** The server prices every order from its own config and refunds the payment if fitting fails.
+- **Director.** A goal card that asks a player to customise a car, a card that opens Whiplash for them, and a
+  Whiplash look for scenario cars.
+- **Controller support** throughout the shop.
 
-- **The shop:** drive onto the car lift inside the WHIPLASH building, open the F1 wheel and pick **Enter Whiplash**.
-  Only the driver can. Nothing opens by itself as a car drives in.
-- **Nitrous:** the Nitrous Bottle (item `nitro`). No shop sells it out of the box: stock it in one of your shops
-  (/whip → Economy → Shops) or hand it out. It is used from the inventory while sitting in the car (a short bar), then
-  Shift boosts (A on a controller). Cars and motorbikes only.
+## Requirements
 
-## Who can modify a car
+- `whip_core`.
+- [whip_autos_shop](https://github.com/WHIPFX/whip_autos_shop) for the shop building. Without it, move the shop floor
+  in the settings.
 
-/whip → Settings → Autos → **Who can modify a car**:
+## Installation
 
-- **Anyone can modify any vehicle** (the default). Whoever drives a car onto the lift can change anything on it,
-  including taking off parts the owner paid for, at no cost.
-- **Only owners can modify performance and tuning.** On someone else's car: looks and repairs only. The Performance
-  shelf's parts and turbo, and the Tuning shelf (engine swap, stance, handling, drivetrain), are the owner's.
-- **Only owners can modify at all.** Anyone else can only repair it: the shop opens with Repair and no customisation.
+WHIP's txAdmin recipe installs it, with whip_autos_shop.
 
-A car nobody owns (a street car, a rental, a scenario's car) is open to whoever drives it, whichever you pick. Work
-done on one lasts only as long as that car exists; the buyer is told after paying.
+By hand, put `whip_autos` and `whip_autos_shop` in your `resources` folder and add these lines to `server.cfg`,
+after `ensure whip_core`:
 
-## The camera
+```cfg
+ensure whip_autos
+ensure whip_autos_shop
+```
 
-Opening a part (the wheels, the exhaust, the spoiler) moves the camera to that part's own shot. The **Standard camera**
-button at the bottom right of the shop (C, or RB on a controller) switches that off for the player who presses it:
-the camera stays on the orbit shot and moves only when they turn or zoom it. Their choice is kept on their own PC.
-/whip → Settings → Autos → **Camera moves to each part** is what players get until they press it.
+There's no SQL to import.
 
-## These change every car on the server
+**Updating:** if you've run `/whiplashengines`, copy `engines.json` out before you replace the folder.
 
-Not only cars that visited Whiplash, and police cars too. If players say "cars feel slow", it is almost always one of
-these. All three are on /whip → Settings → Autos.
+## For players
 
-| Setting | Default | Off |
-|---|---|---|
-| Realistic shifting (Shifting) | On: every car changes gear 1.6 to 5 times slower than GTA's own, by kind of car; each transmission upgrade at Whiplash makes it quicker | GTA's own shift times |
-| Top speed bonus (Power) | 35 mph more top speed for every car and motorbike, by longer gears (a car still needs the power to reach it) | 0 |
-| Gearbox computer (Power) | On, for players on a controller: changes gear like a real automatic, from how hard they drive | GTA's own gearbox |
+Drive onto the lift inside Whiplash, open the **F1** wheel and pick **Enter Whiplash**. Only the driver can.
 
-## Settings
+| Key | Controller | Does |
+| --- | --- | --- |
+| **Scroll** or **← →** | D-pad | Browse |
+| Hold **right mouse** | Right stick | Turn the camera |
+| **C** | **RB** | Standard camera: stays on the car instead of moving to each part |
+| **Esc** | **B** | Back |
+| **Backspace** | | Leave the shop |
 
-- **The page:** /whip → Settings → Autos: the shop's name, floor and size, who can modify a car, the prices, the turbo
-  and nitrous, top speed, shifting, and how far the tuning sliders go.
-- **config.lua** holds the rest (the camera, the shelves, the parts' slot numbers, the gearbox's figures) and the
-  defaults for the page.
-- **A value saved on the page beats config.lua.** Once a setting is saved there, changing it in config.lua does
-  nothing; the page's Reset puts config.lua's value back.
-- **Turbo stages** (config.lua, `Config.Turbo.Stages`): reprice them freely, but never remove a stage or change its
-  psi once players have bought it. A car keeps the psi it bought, and a psi no longer in the list gives it no boost and
-  no gauge (and no refund); putting it back brings those turbos back. Each stage is a whole psi from 1 to 30, no two
-  the same. Keep 15 psi: older turbos were moved onto it.
+**Nitrous:** use a Nitrous Bottle from the inventory while sitting in the car. Then hold **Shift** (**A** on a
+controller) to boost. Players can rebind Shift in GTA's **Settings > Key Bindings > FiveM**.
+
+## Configuration
+
+Most settings are on **/whip > Settings > Autos**: the shop's name and floor, who can modify a car, every price, the
+turbo and nitrous, top speed, shifting, and how far the tuning sliders go. `config.lua` holds their defaults and the
+rest: camera shots, shelves, mod slots and the gearbox's figures. A value saved in game wins over `config.lua`;
+**Reset** goes back to it.
+
+Three settings change every car on the server, police cars included. If players say cars feel slow, check these
+first:
+
+| Setting | Default | Does |
+| --- | --- | --- |
+| Top speed bonus | 35 mph | Lengthens the gearing of every car and motorbike. A car still needs the power to reach it. 0 turns it off. |
+| Realistic shifting | On | Stock gear changes take 1.6 to 5 times GTA's time, by class. Each transmission upgrade makes them quicker. |
+| Gearbox computer | On | Shifts like an automatic, from how hard the player drives. Controller only. |
+
+**Turbo stages** are `Config.Turbo.Stages` in `config.lua`. Reprice them freely, but don't remove a stage or change
+its psi once players have bought it: a car keeps the psi it paid for, and a psi missing from the list gives no boost.
+
+**Engine sounds:** an add-on car whose sound is named differently from its model goes in
+`Config.Tuning.EngineSoundOverrides`.
+
+The nitrous bottle is the item `nitro`. No shop sells it until you stock it in one.
 
 ## Admin tools
 
-All need `whip.devtools` **and developer mode switched on** (`/w`).
+These need `whip.devtools` with developer mode on in `/w`.
 
-- `/whiplash`: open the shop on the car you drive, wherever you are (or close it if it is stuck open).
-- `/whiplashtune engine|stance|setup|drive|clear ...`: put tuning straight on the car you drive. Type it alone for the
-  full usage.
-- `/whiplashengines`: rebuild the engine swap list (`engines.json`) by measuring every vehicle in the game. Takes
-  minutes; run it after adding add-on cars. A prebuilt list ships, so swaps work on a fresh install.
-- **Open Whiplash** in the Object Viewer (`/w`, G on a saved car): the shop on that car.
+| Command | Does |
+| --- | --- |
+| `/whiplash` | Opens the shop on the car you're driving, wherever you are. Again closes it. |
+| `/whiplashtune` | Puts an engine, stance, handling setup or drivetrain on the car you're driving, free. Type it alone for the usage. |
+| `/whiplashengines` | Rebuilds the engine swap list (`engines.json`) by measuring every vehicle in the game. Run it after adding add-on cars; it takes a few minutes. |
 
-## When something goes wrong
+The Object Viewer (`/w`, **G** on a saved car) has **Open Whiplash**, which opens the shop on that car.
 
-| What | Check |
-|---|---|
-| The shop won't open | The car is on the lift (Settings → Autos → Floor and Floor size) and the player is the driver. Someone else may be working on that car. |
-| The shop opens with Repair only, or without the Performance and Tuning shelves | Who can modify a car: the player does not own that car. |
-| Paid, but the part isn't on | The server console says `refunded` or `COULD NOT REFUND` when a fit failed after payment; /whip's activity log has every sale as "Whiplash customisation". |
-| Chameleon paints come out black | On Legacy, the server must force game build 3407 or newer (`sv_enforceGameBuild`), `whip_autos/stream/` must still be there, and no other resource may stream `vehicle_paint_ramps.ytd`. (`stream_enhanced/` is the same file for GTA V Enhanced.) |
-| A turbo does nothing | Its stage was removed or its psi changed (see Turbo stages), or the Turbo's torque per psi is 0 on the settings page. |
-| A swapped engine sounds wrong | An add-on car whose sound is named differently from its model: add it to `Config.Tuning.EngineSoundOverrides` in config.lua. |
-| Cars feel slow or shift oddly | See "These change every car on the server". |
-| The engine swap list is missing cars | Run `/whiplashengines` after adding add-on cars. |
+## Troubleshooting
 
-## Credits
+| Problem | Check |
+| --- | --- |
+| The shop won't open | The car is on the lift (**Floor** and **Floor size**) and the player is driving it. Someone else may be working on it. |
+| Only Repair, or no Performance and Tuning | **Who can modify a car**: the player doesn't own it. |
+| Paid, but the part isn't on | The server console prints `refunded` or `COULD NOT REFUND`. The activity log lists each sale as "Whiplash customisation". |
+| Chameleon paints come out black | Another resource streams `vehicle_paint_ramps.ytd`, or whip_autos' `stream/` folder is missing. |
+| A turbo does nothing | Its psi is missing from `Config.Turbo.Stages`, or **Torque per psi** is 0. |
+| The engine list is missing add-on cars | Run `/whiplashengines`. |
 
-The Chameleon paint ramps (`stream/vehicle_paint_ramps.ytd`) are WildBrick142's Chameleon Paint [Add-On] 2.0, unchanged
-(https://www.gta5-mods.com/misc/chameleon-paint-add-on), with thanks to Disquse and Rockstar Games. They must never be
-sold or monetised.
+## For developers
+
+whip_autos is WHIP's worked example of a shop that takes money for work on a car. **Learning from whip_autos** in
+WHIP's docs (`whip_core/docs.html`) walks through it file by file.
+
+The turbo's boost and the nitrous bottle are the vehicle stats `boost` and `nitro`. Read or react to them with
+whip_core's vehicle stat exports (**Hearing a stat change: OnVehicleStatChange** in the docs). On the server,
+`exports.whip_autos:GetOpenSessions()` lists who is in the shop.
+
+## License
+
+whip_autos is licensed under the GNU LGPL 3.0; see `LICENSE`. Third-party material is listed in `whip_core`'s
+`NOTICE.md`, including three.js (MIT) and the Inter and Rajdhani fonts (SIL Open Font License 1.1).
+
+The Chameleon paint ramps (`vehicle_paint_ramps.ytd` in `stream/` and `stream_enhanced/`) are WildBrick142's
+[Chameleon Paint [Add-On] 2.0](https://www.gta5-mods.com/misc/chameleon-paint-add-on), unchanged, with thanks to
+Disquse and Rockstar Games. Their author's terms say they must never be sold or monetised, so a paid bundle must
+leave this file out.
