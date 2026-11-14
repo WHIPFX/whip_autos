@@ -121,10 +121,11 @@ whip_core's vehicle stat exports (**Hearing a stat change: OnVehicleStatChange**
 
 ## License
 
-whip_autos is licensed under the GNU LGPL 3.0; see `LICENSE`. Third-party material is listed in `whip_core`'s
-`NOTICE.md`, including three.js (MIT) and the Inter and Rajdhani fonts (SIL Open Font License 1.1).
+whip_autos is licensed under the GNU LGPL 3.0; see `COPYING.LESSER`, and `COPYING` for the GPL 3.0 it builds on.
+`NOTICE.md` says what the licence doesn't cover, including three.js (MIT) and the Inter and Rajdhani fonts (SIL Open
+Font License 1.1); `whip_core`'s `NOTICE.md` is the full list.
 
 The Chameleon paint ramps (`vehicle_paint_ramps.ytd` in `stream/` and `stream_enhanced/`) are WildBrick142's
 [Chameleon Paint [Add-On] 2.0](https://www.gta5-mods.com/misc/chameleon-paint-add-on), unchanged, with thanks to
-Disquse and Rockstar Games. Their author's terms say they must never be sold or monetised, so a paid bundle must
-leave this file out.
+Disquse and Rockstar Games. Their author's terms say they must never be sold or monetised, so a paid bundle must leave
+this file out.
