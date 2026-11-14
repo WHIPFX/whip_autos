@@ -118,7 +118,7 @@ whip_autos is WHIP's worked example of a shop that takes money for work on a car
 WHIP's docs (`whip_core/docs.html`) walks through it file by file.
 
 The turbo's boost and the nitrous bottle are the vehicle stats `boost` and `nitro`. Read or react to them with
-whip_core's vehicle stat exports (**Hearing a stat change: OnVehicleStatChange** in the docs). On the server,
+whip_core's vehicle stat exports (**Hearing a stat change: OnVehicleStatChanged** in the docs). On the server,
 `exports.whip_autos:GetOpenSessions()` lists who is in the shop.
 
 ## License

@@ -163,7 +163,7 @@ function Session.open(opts)
     Whip.core:HoldVehicleAppearance(vId, true)
 
     -- whip's HUD, chat and prompts stand down for the shop's screen.
-    Whip.core:SetUIOpen(true, 'session')
+    Whip.core:SetScreenOpen(true, 'session')
 
     if UI and UI.setOpen then UI.setOpen(true) end   -- ui.lua loads after this file
 
@@ -199,7 +199,7 @@ function Session.openBuilder(veh, lines)
         Session.addToBasket(line)
     end
 
-    Whip.core:SetUIOpen(true, 'session')
+    Whip.core:SetScreenOpen(true, 'session')
     if UI and UI.setOpen then UI.setOpen(true) end
     blockShopControls()
     Session.applyCameraChoice()
@@ -332,7 +332,7 @@ function Session.close(purchased)
 
     -- After the revert, so whip's report on release describes the car as it now is.
     if vId then Whip.core:HoldVehicleAppearance(vId, false) end
-    Whip.core:SetUIOpen(false, 'session')
+    Whip.core:SetScreenOpen(false, 'session')
 
     -- Sent after a purchase too (the server has already ended it): one exit path.
     if vId then
