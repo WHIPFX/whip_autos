@@ -100,7 +100,7 @@ end
 --- The Turbo (slot 18): Off, then every stage Whiplash sells (Config.Turbo.Stages), each at its own price. The car's
 --- own is its turbo data (TUNING_TURBO_KEY), not GTA's part, which only goes on with it for the sound.
 local function turboSlot(veh, def)
-    local data = Whip.call('GetVehicleData', { entity = veh }, TUNING_TURBO_KEY)   -- (Catalogue.build: a visit opening)
+    local data = Whip.core:GetVehicleData({ entity = veh }, TUNING_TURBO_KEY)   -- (Catalogue.build: a visit opening)
     local fitted = TuningTurboIndex(data)
     local items = { { index = 0, name = 'Off', price = 0, fitted = fitted == 0 } }
     for _, s in ipairs(PowerTurbo.stages or {}) do
@@ -415,7 +415,7 @@ function Catalogue.build(veh)
     local tuning = {}
     local engines = Tuning.engineList()
     if engines then
-        local cur = Whip.call('GetVehicleData', { entity = veh }, TUNING_ENGINE_KEY)
+        local cur = Whip.core:GetVehicleData({ entity = veh }, TUNING_ENGINE_KEY)
         tuning[#tuning + 1] = {
             key = 'engine', slot = 'engine', kind = 'engine', name = 'Engine Swap',
             price = Config.Tuning.EngineSwapPrice,
@@ -424,7 +424,7 @@ function Catalogue.build(veh)
             items = {},   -- the engine list goes to the page separately (ui.lua)
         }
     end
-    local st = Whip.call('GetVehicleData', { entity = veh }, TUNING_STANCE_KEY)
+    local st = Whip.core:GetVehicleData({ entity = veh }, TUNING_STANCE_KEY)
     tuning[#tuning + 1] = {
         key = 'stance', slot = 'stance', kind = 'stance', name = 'Stance',
         -- Paid once per car; saves after that are free.
@@ -439,8 +439,8 @@ function Catalogue.build(veh)
 
     -- Handling: paid once like stance. steerDeg is the car's own steering angle (before any setup), so the
     -- slider can show degrees; FiveM returns degrees, a tiny value is treated as radians.
-    local su = Whip.call('GetVehicleData', { entity = veh }, TUNING_SETUP_KEY)
-    local lock = Whip.call('GetVehicleHandlingBase', { entity = veh }, 'fSteeringLock')
+    local su = Whip.core:GetVehicleData({ entity = veh }, TUNING_SETUP_KEY)
+    local lock = Whip.core:GetVehicleHandlingBase({ entity = veh }, 'fSteeringLock')
     tuning[#tuning + 1] = {
         key = 'setup', slot = 'setup', kind = 'setup', name = 'Handling',
         price = type(su) == 'table' and 0 or Config.Tuning.SetupPrice,
@@ -453,7 +453,7 @@ function Catalogue.build(veh)
 
     -- Drivetrain: paid once; not offered on bikes. stockLayout names the car's own.
     if GetVehicleNumberOfWheels(veh) >= 4 then
-        local dr = Whip.call('GetVehicleData', { entity = veh }, TUNING_DRIVE_KEY)
+        local dr = Whip.core:GetVehicleData({ entity = veh }, TUNING_DRIVE_KEY)
         tuning[#tuning + 1] = {
             key = 'drive', slot = 'drive', kind = 'drive', name = 'Drivetrain',
             price = type(dr) == 'table' and 0 or Config.Tuning.DrivetrainPrice,
@@ -578,7 +578,7 @@ function Catalogue.apply(veh, slot, index, wheelType)
     -- runs in the revert while it stops), the plain switch.
     local extra = ShopExtraOf(slot)
     if extra then
-        local switched, why = Whip.call('SetVehicleExtras', { entity = veh }, { [extra] = index == 1 })
+        local switched, why = Whip.core:SetVehicleExtras({ entity = veh }, { [extra] = index == 1 })
         if switched == false and why then SetVehicleExtra(veh, extra, index ~= 1) end
         return true
     end

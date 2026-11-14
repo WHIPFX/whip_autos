@@ -17,7 +17,7 @@
 local MODEL_WAIT_MS = 5000
 local GROUND_WAIT_MS = 3000
 
-local function notify(text, kind) Whip.call('Notify', text, kind or 'info') end
+local function notify(text, kind) Whip.core:Notify(text, kind or 'info') end
 
 local function fade(out)
     if out then DoScreenFadeOut(250) else DoScreenFadeIn(250) end
@@ -189,7 +189,7 @@ local function wearDriven(veh, look)
             local line = ShopGoal.unpack(k) or {}
             local slot = line.slot
             if slot == 'engine' and type(line.engine) == 'string' and line.engine ~= 'stock' then
-                local data = Whip.call('Callback', 'whip_autos:engineData', line.engine)
+                local data = Whip.core:Callback('whip_autos:engineData', line.engine)
                 if type(data) == 'table' then w.engine = data end
             elseif slot == 'stance' then w.stance = TuningCleanStance(line.stance)
             elseif slot == 'setup' then w.setup = TuningCleanSetup(line.setup)

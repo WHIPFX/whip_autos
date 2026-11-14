@@ -5,7 +5,8 @@ lua54 'yes'
 name 'whip_autos'
 description 'Whiplash — a vehicle customisation shop, and bolt-on power: a turbo that spools, a nitrous bottle, every car\'s top speed and how long its gears take. The worked example of a whip satellite.'
 author 'Whippy'
-version '0.2.0'
+version '0.4.0'
+whip_updates 'WHIPFX/whip_autos'   -- whip_core checks this repository's releases for a newer version
 
 -- Power (turbo, nitrous, top speed, shift time): client/power/, server/power/, and the Power section
 -- at the end of config.lua.
@@ -15,9 +16,9 @@ version '0.2.0'
 --
 -- Calling whip_core: the docs' one rule (whip_core/docs.html#patterns-calling).
 --   exports.whip_core:X(...)   inside a handler whip_core runs for us: Whip.register, SecureEvent/SecureCallback,
---                              WatchVehicleData, OnVehicleStatChange, AddAction callbacks, a Director card's run.
+--                              WatchVehicleData, OnVehicleStatChanged, AddAction callbacks, a Director card's run.
 --                              A payment in a SecureEvent too, so it and what it pays for are one write.
---   Whip.call('X', ...)        in our own code: a thread, a command, a key press, an NUI callback, our own events.
+--   Whip.core:X(...)           in our own code: a thread, a command, a key press, an NUI callback, our own events.
 --                              It answers false and why where a straight call would throw (whip_core still loading).
 --   Every frame                a quick export straight, behind a started check (client/power/handling.lua).
 --
@@ -87,11 +88,10 @@ files {
 -- The WHIPLASH shop building in Burton is the separate resource whip_autos_shop (map files only). It is not in here so
 -- that restarting whip_autos, or whip_core (which restarts whip_autos with it), never unloads an interior under players.
 
--- stream/vehicle_paint_ramps.ytd (streamed by itself): the colour ramps GTA's Chameleon paints
--- (161-222) draw from. Legacy builds do not ship them, and without them the paints turn the car black.
--- stream_enhanced/ holds the same textures built for GTA V Enhanced, which streams it instead of stream/.
--- The fix and the gradients are WildBrick142's: Chameleon Paint [Add-On] 2.0, unchanged
--- (https://www.gta5-mods.com/misc/chameleon-paint-add-on), with thanks to Disquse (gradient loading)
--- and Rockstar Games. Credit stays with it, and it must never be sold or monetised.
+-- The colour ramps GTA's Chameleon paints (161-222) draw from are the separate resource chameleon_paint:
+-- WildBrick142's Chameleon Paint [Add-On] 2.0, reuploaded unchanged, which the recipe installs in [assets]. It is the
+-- author's work under the author's terms, so it ships on its own rather than in here. Without it those paints turn a
+-- car black.
 
 dependencies { 'whip_core' }
+whip_requires '1.0'   -- the whip_core it is built for: the setup report flags an older one

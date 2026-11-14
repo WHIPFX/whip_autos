@@ -74,7 +74,7 @@ local function applyRevs(entity)
     local model
     if preview ~= nil then model = preview or nil
     else model = _engines[entity] and _engines[entity].model or nil end
-    Whip.call('SetVehicleRevRange', { entity = entity }, model)
+    Whip.core:SetVehicleRevRange({ entity = entity }, model)
 end
 
 -- Stance
@@ -175,7 +175,7 @@ local function setHandlingCamber(entity, n)
     handlingOk = false
     _handlingCamber[entity] = nil
     print(('[whip_autos] handling camber is not available here (%s) — camber is drawn the follow way'):format(tostring(err)))
-    Whip.call('Notify', 'Handling camber did not take — camber is drawn the follow way (F8 says why)', 'error', 8000)
+    Whip.core:Notify('Handling camber did not take — camber is drawn the follow way (F8 says why)', 'error', 8000)
 end
 
 -- ---- 'follow' (track, and camber in follow mode) ----
@@ -658,7 +658,7 @@ Whip.onConfigChanged('Tuning.SoundOnlyEngineClasses', function() _engineList = n
 --- The engine list, fetched the first time. Waits on the server; Session.open may.
 function Tuning.engineList()
     if _engineList then return _engineList end
-    local list = Whip.call('Callback', 'whip_autos:engineList')
+    local list = Whip.core:Callback('whip_autos:engineList')
     if type(list) == 'table' and #list > 0 then _engineList = list end
     return _engineList
 end
@@ -687,12 +687,12 @@ end
 --- Physical ride height (Config.Tuning.Stance.PhysicalHeight): a handling layer on the car this player drives. Off by
 --- default, then it only clears the layer. Never on top of the drawn height.
 local function applyRaise(entity, height)
-    Whip.call('ClearVehicleHandlingLayer', 'stance')   -- first, so the base does not include our raise
+    Whip.core:ClearVehicleHandlingLayer('stance')   -- first, so the base does not include our raise
     if not STANCE.PhysicalHeight or not height or height == 0 then return end
     if not DoesEntityExist(entity) or GetPedInVehicleSeat(entity, -1) ~= PlayerPedId() then return end
-    local base = Whip.call('GetVehicleHandlingBase', { entity = entity }, 'fSuspensionRaise')
+    local base = Whip.core:GetVehicleHandlingBase({ entity = entity }, 'fSuspensionRaise')
     if type(base) ~= 'number' then return end
-    Whip.call('SetVehicleHandlingLayer', { entity = entity }, 'stance', {
+    Whip.core:SetVehicleHandlingLayer({ entity = entity }, 'stance', {
         set = { fSuspensionRaise = base + height / 100.0 },
     })
     ActivatePhysics(entity)
@@ -740,13 +740,13 @@ function Tuning.wearCopy(entity, w)
     end
     if w.drive then _driveSaved[entity] = w.drive; applyDrive(entity, w.drive) end
     -- A poll, not WatchVehicleData's driverOnly: the copy has no VehicleData for a watcher to see. Our own thread,
-    -- so whip_core through Whip.call.
+    -- so whip_core through Whip.core.
     CreateThread(function()
         local on = false
         local function off()
-            Whip.call('ClearVehicleHandlingLayer', 'engine')
-            Whip.call('ClearVehicleHandlingLayer', 'setup')
-            Whip.call('ClearVehicleHandlingLayer', 'stance')
+            Whip.core:ClearVehicleHandlingLayer('engine')
+            Whip.core:ClearVehicleHandlingLayer('setup')
+            Whip.core:ClearVehicleHandlingLayer('stance')
             on = false
         end
         while DoesEntityExist(entity) do
@@ -754,9 +754,9 @@ function Tuning.wearCopy(entity, w)
             if driving and not on then
                 on = true
                 local set = w.engine and TuningEngineSet(w.engine, GetVehicleHandlingFloat(entity, 'CHandlingData', 'fMass')) or nil
-                if set then Whip.call('SetVehicleHandlingLayer', { entity = entity }, 'engine', { set = set }) end
+                if set then Whip.core:SetVehicleHandlingLayer({ entity = entity }, 'engine', { set = set }) end
                 local scale = w.setup and TuningSetupScale(w.setup) or nil
-                if scale and next(scale) then Whip.call('SetVehicleHandlingLayer', { entity = entity }, 'setup', { scale = scale }) end
+                if scale and next(scale) then Whip.core:SetVehicleHandlingLayer({ entity = entity }, 'setup', { scale = scale }) end
                 applyRaise(entity, w.stance and w.stance.height or nil)
             elseif on and not driving then
                 off()

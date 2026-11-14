@@ -58,7 +58,7 @@ end
 
 --- Follow the stat's changes, once whip_core is ready (Whip.register).
 local function RegisterClientWithWhip()
-    exports.whip_core:OnVehicleStatChange('nitro', function(_, value, _, entity)
+    exports.whip_core:OnVehicleStatChanged('nitro', function(_, value, _, entity)
         if entity == keyVeh then serverSays(value or 0) end
     end)
 end
@@ -146,7 +146,7 @@ local function drawFlames(veh)
         RequestNamedPtfxAsset(FLAME_ASSET)   -- loaded at start; if it was dropped, the next boost has it
         return handles
     end
-    if onEnhanced == nil then onEnhanced = (Whip.call('GetPlatform')) == 'enhanced' end
+    if onEnhanced == nil then onEnhanced = (Whip.core:GetPlatform()) == 'enhanced' end
     pcall(function()
         for _, bone in ipairs(exhaustBones(veh)) do
             UseParticleFxAssetNextCall(FLAME_ASSET)
@@ -249,7 +249,7 @@ end)
 
 -- Every client loads the effect at start, to draw anyone's flames. Bounded: a build without it gives up.
 CreateThread(function()
-    Whip.call('LoadPtfxAsset', FLAME_ASSET, 10000)
+    Whip.core:LoadPtfxAsset(FLAME_ASSET, 10000)
 end)
 
 -- ============================================
@@ -268,21 +268,21 @@ local function billBurn(veh)
     lastBurnAt = now
     if burn <= 0 then return estimate <= 0 end
     estimate = math.max(0.0, estimate - burn)
-    -- `{ entity = veh }`: a bare number is a vehicleId on every whip vehicle export. Whip.call: billed from
+    -- `{ entity = veh }`: a bare number is a vehicleId on every whip vehicle export. Whip.core: billed from
     -- whip_core's watcher and from our own key's release alike (endBoost).
-    Whip.call('ConsumeVehicleStat', { entity = veh }, 'nitro', burn)
+    Whip.core:ConsumeVehicleStat({ entity = veh }, 'nitro', burn)
     return estimate <= 0
 end
 
 --- Stop boosting, on every path out. Bills the time since the last tick, so a short tap is not free.
---- Reached from our own key and events as well as whip_core's handlers, so whip_core goes through Whip.call.
+--- Reached from our own key and events as well as whip_core's handlers, so whip_core goes through Whip.core.
 local function endBoost()
     if not boosting then return end
     boosting = false
 
     billBurn(boostVeh --[[@as number]])   -- set while boosting
     if boostWatcherId then
-        Whip.call('SetVehicleStatWatchInterval', boostWatcherId, IDLE_TICK_MS)
+        Whip.core:SetVehicleStatWatchInterval(boostWatcherId, IDLE_TICK_MS)
     end
 
     -- The server has not heard the end of this burn yet: keep the estimate up (see The gauge).
@@ -301,18 +301,18 @@ local function endBoost()
 end
 
 --- Start boosting this car. Called from the key itself, so the power is there on the frame it goes down
---- (and from the pad action: whip_core through Whip.call, as in endBoost).
+--- (and from the pad action: whip_core through Whip.core, as in endBoost).
 local function beginBoost(veh)
     -- Cars and motorbikes only (PowerClasses, shared/power.lua): a bottle already on a boat or bicycle
     -- does nothing.
     if boosting or not PowerClasses[GetVehicleClass(veh)] then return end
     -- Not by a dead driver: a key mapping fires through the death control lock.
-    if Whip.call('IsPlayerDead') == true then return end
+    if Whip.core:IsPlayerDead() == true then return end
 
     -- Start from the server's number, unless the estimate is still being shown (the server is behind
     -- then). A nil answer (car not streamed) is not an empty bottle. An empty one never boosts.
     if not showingEstimate() then
-        local fromServer = Whip.call('GetVehicleStat', { entity = veh }, 'nitro')
+        local fromServer = Whip.core:GetVehicleStat({ entity = veh }, 'nitro')
         if type(fromServer) == 'number' then estimate = fromServer end
     end
     if estimate <= 0 then return end
@@ -322,7 +322,7 @@ local function beginBoost(veh)
     lastBurnAt = GetGameTimer()
 
     if boostWatcherId then
-        Whip.call('SetVehicleStatWatchInterval', boostWatcherId, BOOST_TICK_MS)
+        Whip.core:SetVehicleStatWatchInterval(boostWatcherId, BOOST_TICK_MS)
     end
 
     PowerHandling.set('nitrous', veh, PowerNitrous.torque)
@@ -335,7 +335,7 @@ end
 -- The mapping also appears in the player's keybind settings.
 RegisterCommand('+whip_nitrous', function()
     -- Not while a screen or a placing mode owns the keys.
-    if keyVeh and DoesEntityExist(keyVeh) and Whip.call('IsGameInputFree') == true then beginBoost(keyVeh) end
+    if keyVeh and DoesEntityExist(keyVeh) and Whip.core:IsGameInputFree() == true then beginBoost(keyVeh) end
 end, false)
 
 RegisterCommand('-whip_nitrous', function() endBoost() end, false)

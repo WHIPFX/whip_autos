@@ -45,8 +45,8 @@ local _flaming = {}
 local function relayFlames(src, netId, on)
     local veh = NetworkGetEntityFromNetworkId(netId)
     if not veh or veh == 0 or not DoesEntityExist(veh) then return end   -- gone: each client drops it
-    -- Whip.call: playerDropped calls this too, outside anything whip_core runs.
-    local near = Whip.call('GetPlayersInRange', GetEntityCoords(veh), FLAME_RANGE)
+    -- Whip.core: playerDropped calls this too, outside anything whip_core runs.
+    local near = Whip.core:GetPlayersInRange(GetEntityCoords(veh), FLAME_RANGE)
     if type(near) ~= 'table' then return end
     for _, target in ipairs(near) do
         if target ~= src then TriggerClientEvent('whip_autos:client:nitroFlames', target, netId, on) end

@@ -474,7 +474,7 @@ Config.Colours = {
     { index = 160, name = 'MP100 Gold Spec',           hex = '#FFD859' },
 
     -- Chameleon: colour-shift paints (game build 2612 and later). The two swatch colours are a guide only; the real
-    -- paint shifts with the light. Legacy builds lack the colour ramps, so whip_autos streams them.
+    -- paint shifts with the light. Their colour ramps come from the chameleon_paint resource (fxmanifest.lua).
     { index = 161, name = 'Anodized Red Pearl',          hex = '#A3141F', hex2 = '#5C0A14', family = 'Chameleon' },
     { index = 162, name = 'Anodized Burgundy Pearl',     hex = '#6B1027', hex2 = '#A3141F', family = 'Chameleon' },
     { index = 163, name = 'Anodized Purple Pearl',       hex = '#6A2C9C', hex2 = '#33134F', family = 'Chameleon' },

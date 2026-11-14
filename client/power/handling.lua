@@ -45,7 +45,7 @@ function PowerHandling.set(key, veh, multiplier)
     if not (moved or settled or multiplier == 1.0) then return end
 
     -- The docs' rule for code that runs this often (turbo's tick, eight times a second): a quick export straight,
-    -- behind a started check. The pcall gives the rest of Whip.call's safety without its look-up per call.
+    -- behind a started check. The pcall gives the rest of Whip.core's safety without its look-up per call.
     if GetResourceState('whip_core') ~= 'started' then return end
     local cost = WhipCost.start()   -- /whipcost
     local called, ok = pcall(askPower, key, multiplier)
@@ -59,7 +59,7 @@ function PowerHandling.clear(key)
     prev[key] = nil
     if not asked[key] then return end
     asked[key] = nil
-    Whip.call('ClearVehiclePower', key)
+    Whip.core:ClearVehiclePower(key)
     if next(asked) == nil then current = nil end
 end
 
