@@ -6,6 +6,7 @@ name 'whip_autos'
 description 'Whiplash — a vehicle customisation shop, and bolt-on power: a turbo that spools, a nitrous bottle, every car\'s top speed and how long its gears take. The worked example of a whip satellite.'
 author 'Whippy'
 version '0.3.0'
+whip_updates 'WHIPFX/whip_autos'   -- whip_core checks this repository's releases for a newer version
 
 -- Power (turbo, nitrous, top speed, shift time): client/power/, server/power/, and the Power section
 -- at the end of config.lua.
