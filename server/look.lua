@@ -17,8 +17,8 @@ local CORE = 'whip_core'
 local function orderOf(look)
     local parts, changes = {}, {}
     for _, k in ipairs(look) do
-        local line = ShopGoal.unpack(k)
-        local slot = line and line.slot
+        local line = ShopGoal.unpack(k) or {}
+        local slot = line.slot
         if slot == 'engine' then
             local data = line.engine ~= 'stock' and Engines.data(line.engine) or nil
             if data then changes[#changes + 1] = { key = TUNING_ENGINE_KEY, value = data } end

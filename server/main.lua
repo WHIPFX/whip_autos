@@ -90,7 +90,7 @@ local function onClaim(source, player, vehicleId, anywhere, director)
 end
 
 --- 'whip_autos:server:release': the player left. After a purchase the session is already gone.
-local function onRelease(source, player, vehicleId)
+local function onRelease(source, _, vehicleId)
     local s = sessions[vehicleId]
     if not s or s.source ~= source then return end
 
@@ -287,6 +287,7 @@ local function onPurchase(source, player, vehicleId, method, basket, shown)
 
         -- Each kind has its own valid range; an out-of-range index would be stored and re-applied.
         if ok then
+            ---@cast index -nil -- ok: checked above
             if SERVICES[slot] then
                 index = 1   -- a service is bought or not; the index is pinned
             elseif PAINT_PROP[slot] then
@@ -316,6 +317,8 @@ local function onPurchase(source, player, vehicleId, method, basket, shown)
         end
 
         if ok then
+            ---@cast slot -nil -- ok: both checked above
+            ---@cast index -nil
             index = math.floor(index)
 
             -- Already on the car (its STORED look, not the entity, which is wearing the preview): dropped, so the rest of
@@ -331,8 +334,8 @@ local function onPurchase(source, player, vehicleId, method, basket, shown)
                 -- A turbo stage is written as tuning data with the rest of the order (GTA's part goes on with it, in
                 -- the look); Off clears it. The boost stat follows the data (server/power/turbo.lua).
                 if slot == 18 then
-                    local s = PowerTurbo.stages[index]
-                    tuningChanges[#tuningChanges + 1] = { key = TUNING_TURBO_KEY, value = s and { psi = s.psi } or nil }
+                    local stage = PowerTurbo.stages[index]
+                    tuningChanges[#tuningChanges + 1] = { key = TUNING_TURBO_KEY, value = stage and { psi = stage.psi } or nil }
                 end
             end
         end
@@ -468,6 +471,7 @@ local function RegisterWithWhip()
     }, function(source, player, vehicleId)
         local grant, netId = DirectorGoals.grantFor(source, vehicleId)
         if not grant then return false, 'Whiplash can only be opened on the shop floor' end
+        ---@cast netId -nil -- it comes with the grant
         local ok, why = onClaim(source, player, vehicleId, true, true)
         if ok then DirectorGoals.claimed(source, grant, netId) end
         return ok, why

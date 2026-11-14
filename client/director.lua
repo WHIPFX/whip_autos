@@ -59,7 +59,7 @@ end
 
 --- The server's Force Open (a card, a task, or a goal starting): this car's driver opens Whiplash. With
 --- nobody at the wheel, the passenger nearest it moves over first; everyone else does nothing.
----@param netId number
+---@param netId any  the car's network id (checked here)
 ---@param candidates table  the players told (server ids)
 RegisterNetEvent('whip_autos:client:forceOpen', function(netId, candidates)
     CreateThread(function()

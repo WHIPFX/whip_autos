@@ -884,7 +884,7 @@ end)
 local function reapplyEngine()
     local veh = AutosDrivenCar()
     local value = veh and exports.whip_core:GetVehicleData({ entity = veh }, TUNING_ENGINE_KEY)
-    if type(value) ~= 'table' then return end
+    if not veh or type(value) ~= 'table' then return end
     local set = TuningEngineSet(value, GetVehicleHandlingFloat(veh, 'CHandlingData', 'fMass'))
     if set then exports.whip_core:SetVehicleHandlingLayer({ entity = veh }, 'engine', { set = set }) end
 end

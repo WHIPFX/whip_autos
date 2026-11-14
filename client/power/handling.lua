@@ -19,7 +19,7 @@ local core = exports.whip_core   -- one look-up of the resource (each `exports.w
                                  -- whip_core is followed by it, as by a fresh one
 
 --- The ask itself, made once (not a new function each ask), with the export looked up inside the caller's pcall.
-local function askPower(key, multiplier) return core:SetVehiclePower(ref, key, multiplier) end
+local function askPower(key, multiplier) return core:SetVehiclePower(ref --[[@as WhipVehicleRef]], key, multiplier) end
 
 PowerHandling = {}
 

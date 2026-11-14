@@ -254,7 +254,7 @@ local function RegisterWithWhip()
         end,
 
         -- Returns the gauge reading. WhipCost times this side only; whip_core times the crossing.
-        whileHeld = function(entity, value, dt)
+        whileHeld = function(entity, _, dt)
             local cost = WhipCost.start()
             simulate(entity, dt)
             WhipCost.stop('turbo: whileHeld (the simulation, without the crossing)', cost)

@@ -58,7 +58,7 @@ end
 
 --- Follow the stat's changes, once whip_core is ready (Whip.register).
 local function RegisterClientWithWhip()
-    exports.whip_core:OnVehicleStatChange('nitro', function(_vehicleId, value, _old, entity)
+    exports.whip_core:OnVehicleStatChange('nitro', function(_, value, _, entity)
         if entity == keyVeh then serverSays(value or 0) end
     end)
 end
@@ -280,7 +280,7 @@ local function endBoost()
     if not boosting then return end
     boosting = false
 
-    billBurn(boostVeh)
+    billBurn(boostVeh --[[@as number]])   -- set while boosting
     if boostWatcherId then
         Whip.call('SetVehicleStatWatchInterval', boostWatcherId, IDLE_TICK_MS)
     end

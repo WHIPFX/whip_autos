@@ -437,6 +437,7 @@ runLoop = function(turn)
             pYaw   = dampAngle(pYaw, cyaw, br, dt)
             pFov   = damp(pFov, fov, br, dt)
 
+            ---@cast handle -nil -- the cam is there while active (Cam.start makes it, Cam.stop takes both away)
             SetCamCoord(handle, px, py, pz)
             SetCamRot(handle, pPitch, 0.0, pYaw, 2)
             SetCamFov(handle, pFov)

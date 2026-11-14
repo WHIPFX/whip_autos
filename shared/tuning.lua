@@ -121,7 +121,7 @@ function TuningCleanDrive(t)
 end
 
 --- The handling layer's scale for a setup: { field = factor } for every field off 100%.
----@param setup table  a cleaned setup
+---@param setup table|nil  a cleaned setup (nil: an empty scale)
 ---@return table scale
 function TuningSetupScale(setup)
     local scale = {}

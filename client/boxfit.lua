@@ -7,7 +7,7 @@
 
 BoxFit = {}
 
-local sin, cos, tan, rad, sqrt, abs = math.sin, math.cos, math.tan, math.rad, math.sqrt, math.abs
+local sin, cos, tan, rad, abs = math.sin, math.cos, math.tan, math.rad, math.abs
 
 local function dot(a, b) return a.x * b.x + a.y * b.y + a.z * b.z end
 

@@ -30,6 +30,7 @@ local function startMarker()
                     0.0, 0.0, 0.0,
                     shop.radius * 2.0, shop.radius * 2.0, 0.7,
                     240, 70, 130, 90,       -- whiplash pink
+                    ---@diagnostic disable-next-line: param-type-mismatch -- no texture: nil (the natives library types them string)
                     false, false, 2, false, nil, nil, false
                 )
             end

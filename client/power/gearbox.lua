@@ -128,9 +128,17 @@ local function clutchOut(veh)
     return type(c) == 'number' and c < CLUTCH_IN
 end
 
+---@class WhipAutosGearCar
+---@field veh number
+---@field high number
+---@field ratio number[]
+---@field want number
+---@field applied number|nil
+
 --- The car the computer drives, on one gear: { veh, high, ratio = { [gear] = GTA's ratio }, want, applied }. `high`
 --- and `ratio` are the car's own, put back when handed back; `want` is the gear driven, `applied` the gear whose ratio
 --- gear 1 has now. nil: GTA's own box.
+---@type WhipAutosGearCar|nil
 local car = nil
 
 --- The car's gearbox as GTA has it: its gears and their ratios. nil, why when it cannot be driven.
@@ -154,12 +162,22 @@ end
 
 --- Gear 1 gets the ratio of the gear wanted, if it has not already.
 local function applyRatio()
+    ---@cast car -nil
     if car.applied == car.want then return end
     SetVehicleGearRatio(car.veh, 1, car.ratio[car.want] + 0.0)
     car.applied = car.want
 end
 
 -- Deciding
+
+---@class WhipAutosGearShift
+---@field up boolean
+---@field from number
+---@field to number
+---@field at number
+---@field seconds number
+---@field switchAt number
+---@field switched boolean
 
 local aggression = 0.0
 local kickArmed = true -- the next time the aggression builds to Kickdown, a kickdown
@@ -169,6 +187,7 @@ local upAt = -1e9      -- when it last changed up
 local check = nil      -- a change being checked: { from, to, factor, rpm, speed, at }: did the revs move with it?
 local missed = 0       -- changes running whose revs did not move
 local off = false      -- this car does not drive by its ratio: the computer stays off it
+---@type WhipAutosGearShift|nil
 local shift = nil      -- a change under way: { up, from, to, at, seconds, switchAt, switched }
 local seen = {}        -- GTA's own changes on this car, timed: seen.up / seen.down = { seconds, switchAt }
 local gtaShift = nil   -- one of GTA's own under way, being timed: { at, gear, up, switchedAt }
@@ -291,6 +310,7 @@ end
 --- Where a change down from gear `from` to `to` would leave the revs once it is done: they go on
 --- climbing while it changes (this car's down change time, at the climb seen in this gear).
 local function landing(veh, rpm, from, to)
+    ---@cast car -nil
     return (rpm + math.max(0.0, rise) * (shiftTiming(veh, false))) * car.ratio[to] / car.ratio[from]
 end
 
@@ -299,7 +319,8 @@ end
 local function roomTop() return 1.0 - G.room * (1.0 - IDLE_RPM) end
 
 --- Change to gear `to`, for `why`: the torque cut now, the new gear in part way (changeStep).
-local function change(to, now, rpm, speed, why, ...)
+local function change(to, now, _, _, why, ...)
+    ---@cast car -nil
     say(why, ...)
     local from = car.want
     car.want, changedAt = to, now
@@ -311,6 +332,8 @@ end
 --- A change under way, this frame: the new gear goes in at its point (and is checked from there), and
 --- the torque, cut until then, comes back over the rest.
 local function changeStep(veh, now, rpm, speed)
+    ---@cast car -nil
+    ---@cast shift -nil
     local t = (now - shift.at) / 1000.0 / shift.seconds
     if not shift.switched and t >= shift.switchAt then
         shift.switched = true
@@ -334,6 +357,7 @@ end
 --- The one-gear setup still as it was left? A tuning change (a swap's gear count, a top speed commit)
 --- can rebuild GTA's gearbox: read it again as the car's own, and drive it again.
 local function guard(veh)
+    ---@cast car -nil
     local high = GetVehicleHighGear(veh)
     local r1 = GetVehicleGearRatio(veh, 1)
     local ours = type(r1) == 'number' and math.abs(r1 - car.ratio[car.applied or 1]) < 0.0005
@@ -404,6 +428,7 @@ local function frame(veh, now, dt)
         recheck = false
         if not take(veh, gear, rpm, speed, now, settled) then return end
     end
+    ---@cast car -nil -- driving it now (or take() above would have returned)
 
     if now - guardAt >= GUARD_MS then
         guardAt = now
@@ -493,6 +518,7 @@ local function frame(veh, now, dt)
         local held = pedal > aggression + BUILDING or now - upAt < UP_HOLD_MS
         if want > 1 and speed < STOP_SPEED then
             change(1, now, rpm, speed, 'all but stopped: 1st')
+            ---@cast shift -nil -- change() made it
             shift.switchAt = 0.0   -- in at once: pulling away again starts in 1st
         elseif pedal > PEDAL_OFF and want < car.high and rpm >= up
             and rpm * car.ratio[want + 1] / car.ratio[want] >= G.ecoDown + LUG_MARGIN then

@@ -15,7 +15,7 @@ local function RegisterWithWhip()
             { 'what', 'enum', { 'engine', 'stance', 'setup', 'drive', 'clear' } },
             { 'args', 'any' },
         },
-    }, function(source, player, what, args)
+    }, function(source, _, what, args)
         local vehicleId, notDriving = exports.whip_core:GetPlayerVehicle(source, { driver = true })
         if not vehicleId then return false, notDriving or 'Drive the car you want to tune' end
         args = type(args) == 'table' and args or {}

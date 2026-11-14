@@ -569,6 +569,7 @@ function Catalogue.apply(veh, slot, index, wheelType)
     end
 
     if TOGGLE_SLOTS[slot] then
+        ---@cast slot integer -- Config.Toggles are mod slots
         ToggleVehicleMod(veh, slot, index == 1)
         return true
     end
@@ -578,7 +579,7 @@ function Catalogue.apply(veh, slot, index, wheelType)
     local extra = ShopExtraOf(slot)
     if extra then
         local switched, why = Whip.call('SetVehicleExtras', { entity = veh }, { [extra] = index == 1 })
-        if switched == false and why then SetVehicleExtra(veh, extra, index == 1 and 0 or 1) end
+        if switched == false and why then SetVehicleExtra(veh, extra, index ~= 1) end
         return true
     end
 
@@ -596,6 +597,7 @@ function Catalogue.apply(veh, slot, index, wheelType)
     end
 
     -- The last argument keeps the car's custom tyres setting.
+    ---@cast slot integer -- a mod slot: the named ones are answered above
     SetVehicleMod(veh, slot, index, GetVehicleModVariation(veh, slot))
     return true
 end

@@ -153,7 +153,7 @@ local function RegisterWithWhip()
         burst     = 4,
         sheet     = 'light',   -- the handler reads no player sheet: the full one is copied across for nothing
         params    = { { 'on', 'bool' } },
-    }, function(source, _player, on)
+    }, function(source, _, on)
         if not on then flamesOff(source) return end
         -- On: only the driver of a whip car carrying nitrous, as the server sees them.
         local vehicleId = exports.whip_core:GetPlayerVehicle(source, { driver = true })

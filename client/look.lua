@@ -48,7 +48,7 @@ end
 
 --- Whiplash on a copy of a car, until it closes: the look saved, or nil when it was left without saving (or could
 --- not open).
----@param model string
+---@param model string|number|nil  its name or hash (nil: it cannot open)
 ---@param c table  where the car is placed: { x, y, z, heading }
 ---@param kept table|nil  its look so far (kept lines)
 ---@return table|nil look
@@ -186,8 +186,8 @@ local function wearDriven(veh, look)
     CreateThread(function()
         local w = {}
         for _, k in ipairs(look) do
-            local line = ShopGoal.unpack(k)
-            local slot = line and line.slot
+            local line = ShopGoal.unpack(k) or {}
+            local slot = line.slot
             if slot == 'engine' and type(line.engine) == 'string' and line.engine ~= 'stock' then
                 local data = Whip.call('Callback', 'whip_autos:engineData', line.engine)
                 if type(data) == 'table' then w.engine = data end

@@ -220,10 +220,10 @@ local function watch(job)
             local netId = NetworkGetNetworkIdFromEntity(ent)
             if netId ~= job.netId then moveTo(job, netId) end
             if not job.opened then
-                local list = openersOf(ent, job.who)
+                local list = openersOf(ent, job.who) or {}
                 -- Each player is put in once: one who left it can come back through the radial.
                 local fresh = false
-                for _, src in ipairs(list or {}) do
+                for _, src in ipairs(list) do
                     if not job.told[src] then fresh = true end
                 end
                 if fresh then
@@ -296,7 +296,7 @@ end
 local MOST_KEY = 'most:'   -- most:<model hash> = dollars
 
 --- What every part a model takes comes to, or nil when no Whiplash visit has said yet.
----@param model string
+---@param model string|nil
 ---@return number|nil
 local function mostFor(model)
     if type(model) ~= 'string' or model == '' then return nil end

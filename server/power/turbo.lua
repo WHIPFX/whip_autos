@@ -184,7 +184,7 @@ local function RegisterWithWhip()
     -- tool); `now` also walks the cars that already carry one. Live boost reports land here too, so anything but the
     -- stat arriving (`previous == nil`, as `now` passes it) or going returns at once. Off to a thread: this runs inside
     -- whip_core's stat write, and the appearance and data writes wait on the database.
-    exports.whip_core:OnVehicleStatChange('boost', function(vehicleId, value, previous, cleared)
+    exports.whip_core:OnVehicleStatChange('boost', function(vehicleId, _, previous, cleared)
         if not cleared and previous ~= nil then return end
         queueGtaTurbo(vehicleId, not cleared)
         -- A boost stat with no stage behind it is a bolt-on turbo from before the stages: given one.

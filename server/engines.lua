@@ -180,7 +180,7 @@ local function RegisterWithWhip()
         rateLimit = 100,
         burst = 10,
         params = { { 'chunk', 'any' } },
-    }, function(source, player, chunk)
+    }, function(source, _, chunk)
         if type(chunk) ~= 'table' or type(chunk.entries) ~= 'table' then return end
         local index, total = math.floor(tonumber(chunk.index) or 0), math.floor(tonumber(chunk.total) or 0)
         if index < 1 or total < 1 or index > total or total > 1000 then return end

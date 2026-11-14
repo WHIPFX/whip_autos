@@ -103,7 +103,7 @@ end
 
 --- What every part this car takes comes to, told to the server (a Director goal's Check uses it).
 local function sayMost(veh)
-    local most = Catalogue.most(catalogue)
+    local most = Catalogue.most(catalogue --[[@as table]])   -- built just before
     if most > 0 then TriggerServerEvent('whip_autos:server:carMost', GetEntityModel(veh) & 0xFFFFFFFF, most) end
 end
 
@@ -246,6 +246,7 @@ local function holdStill(want)
     if frozen then return end
 
     local turn, veh = holdTurn, vehicle
+    if not veh then return end
     CreateThread(function()
         local deadline, last = GetGameTimer() + 1500, -1.0
         while GetGameTimer() < deadline do
