@@ -9,8 +9,7 @@
 -- (client/power/turbo.lua); the stat's `live` block is what keeps its reports honest.
 --
 -- A car with a turbo from before the stages (a boost stat with no stage behind it, or GTA's own turbo part on its own)
--- gets the OLD_TURBO_PSI stage; the old turbo item and its wrench are retired (RegisterWithWhip). The worker threads below are our own
--- code, so they call whip_core through Whip.call.
+-- gets the OLD_TURBO_PSI stage. The worker threads below are our own code, so they call whip_core through Whip.call.
 
 local BOOST_IDLE = PowerTurbo.IDLE   -- a fitted turbo at rest (shared/power.lua)
 
@@ -197,14 +196,6 @@ local function RegisterWithWhip()
     exports.whip_core:OnVehicleDataChange(TUNING_TURBO_KEY, function(c)
         CreateThread(function() followTurbo(c.vehicleId, (not c.cleared) and c.value or nil) end)
     end, { table = true, now = true })
-
-    -- The old turbo item and its wrench, both gone: a turbo is bought at Whiplash now. Every one players still have is
-    -- taken out of their pockets, stashes, boots and off the ground, logged, not refunded. Kept retired here for good:
-    -- a retirement holds only while this resource makes it, and a stash or a character not loaded since still has some.
-    for item, why in pairs({ turbo = 'Turbos are sold at Whiplash now, in stages', wrench = 'The wrench is no longer used' }) do
-        local retired, retireWhy = exports.whip_core:RetireItem(item, why)
-        if not retired then print(('[whip_autos] could not retire the old %s item: %s'):format(item, tostring(retireWhy))) end
-    end
 
     print('[whip_autos] turbo system loaded')
 end
