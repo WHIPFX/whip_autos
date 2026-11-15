@@ -74,6 +74,8 @@ local function show()
         job       = Goals.model(),      -- a Director goal's checklist (client/director.lua), or none
         builder   = Session.isBuilder(),   -- setting how a Director car spawns (client/look.lua): Save, not pay
         standardCam = Session.standardCamera(),   -- the Standard camera button's state
+        -- Developer mode on (/w): the basket offers Free as well. The server asks again when it is chosen.
+        dev       = Whip.core:HasDevTools() == true,
     }
     if not listsSent then
         msg.palette = Catalogue.palette()
@@ -249,7 +251,7 @@ cb('checkout', function(data)
     if #basket == 0 then return end
 
     local method = data.method
-    if method ~= 'cash' and method ~= 'bank' then return end
+    if method ~= 'cash' and method ~= 'bank' and method ~= 'free' then return end
 
     local lines = {}
     for _, b in ipairs(basket) do
@@ -269,6 +271,11 @@ end)
 --- The world builder's Save: the basket is how the car spawns (client/look.lua takes it).
 cb('saveLook', function()
     if Session.isBuilder() then Session.saveLook() end
+end)
+
+--- Developer mode switched while the shop is open: Free comes or goes from the basket.
+AddEventHandler('whip_core:devtools:modeChanged', function(e)
+    if open then SendNUIMessage({ action = 'devMode', on = type(e) == 'table' and e.on == true }) end
 end)
 
 --- The player's cash moved while the shop is open (server/main.lua, cashMoved).

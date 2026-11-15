@@ -1806,12 +1806,13 @@ class BasketDialog extends Dialog {
         this.tiles = [this.payTile('cash'), this.payTile('bank')];
         // Setting how a Director car spawns: one tile, Save, where the two pay tiles go.
         this.saveTile = this.payTile('save');
+        // Developer mode: Free, on Keep shopping's row (the dialog is as tall as the screen with a full basket).
+        this.freeTile = this.payTile('free', 760 - 96 - 290 - 20, 90);
         this.keep = this.key(o + 3);
     }
-    payTile(kind) {
+    payTile(kind, w = (760 - 96 - 20) / 2, h = 148) {
         const o = ORDER.dlg;
-        const w = (760 - 96 - 20) / 2, h = 148;
-        const t = { group: new THREE.Group(), mat: glassMaterial(0.6) };
+        const t = { group: new THREE.Group(), mat: glassMaterial(0.6), w, h };
         t.mat.color.set('#081a45');                    // deep navy, set into the blue dialog
         t.body = new THREE.Mesh(slabGeometry(w, h, 14, 6, 3), t.mat);
         t.body.renderOrder = o + 1;
@@ -1842,6 +1843,11 @@ class BasketDialog extends Dialog {
                 c.beginPath(); c.arc(cx, cy, 4, 0, Math.PI * 2);
             } else if (kind === 'save') {
                 c.moveTo(cx - 12, cy + 1); c.lineTo(cx - 4, cy + 9); c.lineTo(cx + 13, cy - 9);
+            } else if (kind === 'free') {
+                // </>: developer mode
+                c.moveTo(cx - 7, cy - 10); c.lineTo(cx - 16, cy); c.lineTo(cx - 7, cy + 10);
+                c.moveTo(cx + 7, cy - 10); c.lineTo(cx + 16, cy); c.lineTo(cx + 7, cy + 10);
+                c.moveTo(cx + 3, cy - 13); c.lineTo(cx - 3, cy + 13);
             } else {
                 c.moveTo(cx - 15, cy - 5); c.lineTo(cx, cy - 14); c.lineTo(cx + 15, cy - 5);
                 c.moveTo(cx - 9, cy - 1); c.lineTo(cx - 9, cy + 10);
@@ -1851,7 +1857,8 @@ class BasketDialog extends Dialog {
             }
             c.stroke();
             const words = { cash: ['Cash', 'From your pockets'], bank: ['Bank', 'Your default account'],
-                            save: ['Save', 'The car spawns like this'] }[kind];
+                            save: ['Save', 'The car spawns like this'],
+                            free: ['Free', 'Developer mode'] }[kind];
             text(c, words[0], 100, cy - 10, { size: 28, weight: 700, color: COL.text, display: true });
             wrap(c, words[1], 100, cy + 24, cw - 116, 26, 2, { size: 21, weight: 500, color: COL.text });
             c.globalAlpha = 1;
@@ -1922,6 +1929,14 @@ class BasketDialog extends Dialog {
         s.ring.visible = b.focus === 'save';
         place(s.group, P, y, 2);
         y += 148 + 34;
+        const f = this.freeTile;
+        f.group.visible = !b.builder && !!b.onFree;
+        f.enabled = f.group.visible && b.payEnabled;
+        f.onClick = b.onFree;
+        f.id = 'free';
+        f.draw(b.payEnabled);
+        f.ring.visible = b.focus === 'free';
+        place(f.group, P, y, 2);
         const kw = 290;
         this.keep.set({ label: b.builder ? 'Keep editing' : 'Keep shopping', style: 'quiet', w: kw, h: 90, size: 22, onClick: b.onKeep, focus: b.focus === 'keep' });
         this.keep.at(760 - P - kw, y, 2);
@@ -1955,6 +1970,11 @@ class BasketDialog extends Dialog {
                 const s = st.toScreen(t.group, 161, 74, 0);
                 out.push({ id: t.id, x: s.x, y: s.y, onClick: t.onClick });
             });
+            const f = this.freeTile;
+            if (f.group.visible) {
+                const s = st.toScreen(f.group, f.w / 2, f.h / 2, 0);
+                out.push({ id: 'free', x: s.x, y: s.y, onClick: f.onClick });
+            }
         }
         const s = st.toScreen(this.keep.group, 145, 45, 0);
         out.push({ id: 'keep', x: s.x, y: s.y, onClick: b.onKeep });

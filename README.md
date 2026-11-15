@@ -101,6 +101,9 @@ These need `whip.devtools` with developer mode on in `/w`.
 
 The Object Viewer (`/w`, **G** on a saved car) has **Open Whiplash**, which opens the shop on that car.
 
+In developer mode the basket has a third way to pay, **Free**: the parts go on and nothing is charged. The activity log
+lists each free order as `whiplash_free`, with what it would have cost.
+
 ## Troubleshooting
 
 | Problem | Check |

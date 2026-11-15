@@ -68,6 +68,7 @@ let engines   = [];   // [ { model, label, class, hp, torque, soundOnly } ] for 
 let padOn     = false; // a controller is the device (ui.lua 'padDevice'): pad hints and rings show (padPress)
 let isOpen    = false;
 let builder   = false; // setting how a Director car spawns (client/look.lua): no services, no prices, Save not pay
+let dev       = false; // developer mode on (ui.lua 'open', 'devMode'): the basket offers Free; the server checks again
 let orbiting  = false;
 let standardCam = false; // the standard camera is on: the orbit shot only, no part shots (client/camera.lua)
 
@@ -1282,6 +1283,7 @@ function render() {
             payEnabled: !paying && n > 0,
             onCash: () => send('cash'),
             onBank: () => send('bank'),
+            onFree: dev ? () => send('free') : null,   // developer mode only
             onKeep: closeBasket,
             // Setting how a car spawns: one Save, empty or not (an empty one: it spawns as it is).
             builder,
@@ -1449,6 +1451,7 @@ window.addEventListener('message', (event) => {
             basket    = d.basket || [];
             job       = d.job || null;
             builder   = d.builder === true;
+            dev       = d.dev === true;
             standardCam = d.standardCam === true;
             services  = d.services || [];
             // Palette and engines arrive on the first visit only (ui.lua, listsSent).
@@ -1504,6 +1507,12 @@ window.addEventListener('message', (event) => {
             basket = d.basket || [];
             job = d.job || null;   // every basket message carries the checklist as it now stands
             render();   // cards show what is already chosen
+            break;
+
+        // Developer mode switched while the shop is open (ui.lua): Free comes or goes.
+        case 'devMode':
+            dev = d.on === true;
+            render();
             break;
 
         // Server's cash count (ui.lua, refreshCash).

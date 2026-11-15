@@ -216,6 +216,7 @@ end
 
 --- 'whip_autos:server:purchase': re-prices the basket from scratch, charges, writes tuning and parts in
 --- one write, and refunds if it fails. A refusal is `false, 'why'` (whip shows it); purchaseResult tells the page.
+--- `method` 'free' charges nothing: developer mode only, asked here, not taken from the page.
 local function onPurchase(source, player, vehicleId, method, basket, shown)
     local function fail(msg)
         TriggerClientEvent('whip_autos:client:purchaseResult', source, false, msg)
@@ -224,6 +225,12 @@ local function onPurchase(source, player, vehicleId, method, basket, shown)
 
     -- The basket's shape was checked by the 'list' param; what each line means is checked here.
     if #basket == 0 then return fail('Nothing in the basket') end
+
+    -- HasDevTools, not the ACE: whip.devtools counts only with developer mode on (/w).
+    local free = method == 'free'
+    if free and exports.whip_core:HasDevTools(source) ~= true then
+        return fail('Free is for developer mode only')
+    end
 
     -- The session is the permission: this player claimed this car and has not left it.
     local s = sessions[vehicleId]
@@ -359,14 +366,14 @@ local function onPurchase(source, player, vehicleId, method, basket, shown)
 
     -- Never more than the page showed: a price raised in /whip while they were here is refused, not
     -- charged. Less is fine (a line already on the car is dropped above). -1: a page that sent none.
-    if shown >= 0 and total > shown then
+    if not free and shown >= 0 and total > shown then
         return fail('The prices changed while you were here. Leave and come back to see them.')
     end
 
     -- Paid before fitted: a failed fit is refunded. The payment is held and lands with the fitting write, so a crash
     -- between paying and fitting keeps neither.
     local receipt
-    if total > 0 then
+    if total > 0 and not free then
         local payErr
         receipt, payErr = exports.whip_core:ChargePlayer(source, total, {
             method = method == 'bank' and 'bank' or 'cash',
@@ -412,13 +419,19 @@ local function onPurchase(source, player, vehicleId, method, basket, shown)
     -- Ended without a restore: the stored look is now what is on the car.
     sessions[vehicleId] = nil
 
-    -- (No print of the sale: ChargePlayer logs it in whip's activity log.)
+    -- (No print of the sale: ChargePlayer logs it in whip's activity log.) A free one has no charge to log, so it
+    -- writes its own row.
+    if free and total > 0 then
+        exports.whip_core:LogActivity(source, 'whiplash_free', {
+            detail = ('$%d of work on vehicle #%d, free (developer mode)'):format(total, vehicleId),
+        })
+    end
 
     -- A Director goal's checklist ticks off what this order did (and may be done).
     DirectorGoals.purchased(vehicleId, source, lines)
 
-    -- The repair flag rides on the result, so it arrives before the client lets go of the car.
-    TriggerClientEvent('whip_autos:client:purchaseResult', source, true, nil, total, repairing)
+    -- The repair flag rides on the result, so it arrives before the client lets go of the car. Free: nothing paid.
+    TriggerClientEvent('whip_autos:client:purchaseResult', source, true, nil, free and 0 or total, repairing)
 end
 
 -- Registering with whip_core: SecureEvent/SecureCallback live inside whip_core, so they are declared in
@@ -496,7 +509,7 @@ local function RegisterWithWhip()
         end,
         params = {
             { 'vehicleId', 'id' },
-            { 'method', 'enum', { 'cash', 'bank' } },
+            { 'method', 'enum', { 'cash', 'bank', 'free' } },   -- free: developer mode only (onPurchase)
             -- At most 40 lines. `index` is refused, not clamped ('id', from -1 = stock); `slot` and
             -- `wheelType` are checked in onPurchase; the tuning fields by server/tuning.lua.
             { 'basket', 'list', {
