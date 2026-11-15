@@ -267,6 +267,8 @@ end
 local BONNET_SLOTS = { [39] = true, [40] = true, [41] = true }
 local BOOT_SLOTS = { [37] = true }
 local bootOpened = false
+local DOOR_SLOTS = { [31] = 0, [32] = 1, [33] = 0 }   -- the door each opens: door speakers and steering wheel the driver's, seats the passenger's
+local doorOpened = false   -- the door open, or false
 
 --- Xenon colours only show with the headlights on: forced on while Xenon Lights is open, then handed back (0).
 local lightsForced = false
@@ -313,6 +315,7 @@ local function teardownLocal(revert)
     if vehicle and DoesEntityExist(vehicle) then
         SetVehicleDoorShut(vehicle, 4, false)
         if bootOpened then SetVehicleDoorShut(vehicle, 5, false) end
+        if doorOpened then SetVehicleDoorShut(vehicle, doorOpened, false) end
         -- Tuning previews always come off. Guarded: the controls, camera and page below must come back regardless.
         local ok, err = pcall(Tuning.clearPreviews, vehicle)
         if not ok then print(('[whip_autos] could not drop the tuning previews: %s'):format(tostring(err))) end
@@ -320,6 +323,7 @@ local function teardownLocal(revert)
     lightsForXenons(false)
     neonForColour(false)
     bootOpened = false
+    doorOpened = false
     focusSlot = nil
 
     -- If this resource is the one stopping, whip_core sweeps the block itself.
@@ -601,6 +605,15 @@ function Session.setFocus(s, slot)
         elseif bootOpened then
             SetVehicleDoorShut(vehicle, 5, false)
             bootOpened = false
+        end
+        local door = DOOR_SLOTS[slot]
+        if doorOpened and doorOpened ~= door then
+            SetVehicleDoorShut(vehicle, doorOpened, false)
+            doorOpened = false
+        end
+        if door then
+            SetVehicleDoorOpen(vehicle, door, false, false)
+            doorOpened = door
         end
 
         if engineScreen then holdStill(true) end

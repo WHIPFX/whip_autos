@@ -86,6 +86,18 @@ Config.Camera = {
         -- Paints > Wheel Colour: `wheels` from further round the front. Only the yaw differs.
         wheelpaint  = { yaw = 134.0, pitch = -4.0, distRatio = 0.37, aim = { x = 0.55, y =  0.55, z = -0.55 }, fov = 32.0 },
         livery     = { yaw =  90.0, pitch =  8.0, distRatio = 0.90, aim = { x = 0.40, y =  0.00, z =  0.35 }, aimPitch = -3.0, fov = 36.0 },
+        -- Inside the cabin: the camera sits in the car, so no glass is in the way.
+        dashboard   = { yaw =   0.0, pitch = 12.0, distRatio = 0.25, aim = { x = 0.00, y =  0.30, z =  0.30 }, aimPitch = -6.0, fov = 50.0 },
+        -- The driver's door, opened (client/session.lua): its inside, from behind it.
+        doorspeaker = { yaw = -10.0, pitch = 15.0, distRatio = 0.30, aim = { x = -1.30, y = 0.05, z = -0.10 }, fov = 45.0 },
+        -- The passenger seat, through its opened door (client/session.lua): the driver sits in theirs.
+        seats       = { yaw = 150.0, pitch = 21.7, distRatio = 0.40, aim = { x = 0.40, y = -0.15, z =  0.00 }, fov = 45.0 },
+        -- The steering wheel, through the opened driver's door (client/session.lua), from behind the door.
+        steering    = { yaw = -36.7, pitch = 19.0, distRatio = 0.40, aim = { x = -0.38, y = 0.20, z =  0.25 }, fov = 45.0 },
+        -- The front corner: the headlight and the front arch together (arch covers are either, by car).
+        frontcorner = { yaw = 140.0, pitch = 10.0, distRatio = 0.55, aim = { x = 0.60, y =  0.60, z =  0.00 }, aimPitch = -3.0, fov = 36.0 },
+        -- The front half from above the bumper: bumper lamps and roof or wing aerials (aerials are either, by car).
+        front       = { yaw = 150.0, pitch = 15.0, distRatio = 0.75, aim = { x = 0.00, y =  0.40, z =  0.10 }, aimPitch = -3.0, fov = 36.0 },
     },
     default = 'default',
 
@@ -111,16 +123,19 @@ Config.Areas = {
     [25] = 'rearbumper',     -- plate holder
     [26] = 'rearbumper',     -- vanity plate
     [27] = 'trim',
-    [29] = 'trim',           -- dashboard
-    [31] = 'trim',           -- door speakers
-    [32] = 'trim',           -- seats
+    [28] = 'dashboard',      -- ornaments: on the dashboard
+    [29] = 'dashboard',
+    [30] = 'dashboard',      -- dials: some sit on the glovebox or the middle of the dash
+    [31] = 'doorspeaker',    -- door speakers: the driver's door opens
+    [32] = 'seats',          -- the passenger's door opens
+    [33] = 'steering',       -- steering wheel: the driver's door opens
     [36] = 'trim',           -- speakers
     [37] = 'rearbumper',     -- trunk: the boot opens
     [39] = 'hood',           -- engine block: the bonnet opens
     [40] = 'hood',           -- air filter: the bonnet opens
     [41] = 'hood',           -- struts: the bonnet opens
-    [42] = 'sideskirt',      -- arch covers
-    [43] = 'roof',           -- aerials
+    [42] = 'frontcorner',    -- arch covers
+    [43] = 'front',          -- aerials
     [45] = 'sideskirt',      -- tank
     [46] = 'sideskirt',      -- windows / left door
     [47] = 'sideskirt',      -- right door
