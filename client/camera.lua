@@ -1,7 +1,7 @@
 -- ============================================
 -- whip_autos — showroom camera
 -- ============================================
--- An orbit camera around the car, adapted from nfsmw_camera's showcase mover and kept self-contained.
+-- An orbit camera around the car, kept self-contained.
 -- session.lua starts and stops it and says when the page shares the mouse; framings come from
 -- Config.Camera.framings, fitted to each car through client/boxfit.lua.
 
