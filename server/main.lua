@@ -465,6 +465,18 @@ local SHOP_NEAR = {
     message = 'Drive onto the Whiplash floor first',
 }
 
+--- The shop on everyone's map. whip keeps it while this resource runs; the same id again moves or renames it.
+local function showBlip()
+    local b = Config.Blip
+    if not b or not b.show then return end
+    local c = Config.Shop.coords
+    local ok, why = exports.whip_core:ShowBlip('everyone', 'shop', {
+        coords = vector3(c.x, c.y, c.z), label = Config.Shop.label, sprite = b.sprite, color = b.color,
+        scale = b.scale, shortRange = true,
+    })
+    if not ok then print('[whip_autos] no blip: ' .. tostring(why)) end
+end
+
 local function RegisterWithWhip()
     exports.whip_core:SecureCallback('whip_autos:claim', {
         rateLimit = 1000,
@@ -543,9 +555,16 @@ local function RegisterWithWhip()
     }, function(source)
         return (exports.whip_core:GetPlayerCash(source))
     end)
+
+    showBlip()
 end
 
 Whip.register(RegisterWithWhip)
+
+-- The floor moved or the shop renamed in /whip: the blip follows.
+Whip.onConfigChanged('Shop', function()
+    if Whip.isReady() then showBlip() end
+end)
 
 -- Endings nobody chose
 

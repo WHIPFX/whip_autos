@@ -15,6 +15,15 @@ Config.Shop = {
     marker = false,
 }
 
+-- The shop on everyone's map, at the floor, named as the shop is. `show = false` leaves it off. sprite and color are
+-- GTA's blip icon and colour numbers (825 is a sports car, 8 is pink).
+Config.Blip = {
+    show   = true,
+    sprite = 825,
+    color  = 8,
+    scale  = 0.8,
+}
+
 --- Who may work on a car someone owns, from its driver's seat:
 ---   'anyone'        anyone can modify any vehicle
 ---   'ownerTuning'   only its owner can change performance and tuning; anyone can change looks and repair
