@@ -283,6 +283,22 @@ local function lightsForXenons(want)
     end
 end
 
+--- Neon colours only show on lit tubes: a car showing none has all four lit while Neon Colour is open, then put out.
+local neonForced = false
+local function neonForColour(want)
+    if not vehicle or not DoesEntityExist(vehicle) then neonForced = false return end
+    if want and not neonForced then
+        for side = 0, 3 do
+            if IsVehicleNeonLightEnabled(vehicle, side) then return end
+        end
+        Catalogue.apply(vehicle, 'neon', 15)
+        neonForced = true
+    elseif not want and neonForced then
+        Catalogue.apply(vehicle, 'neon', 0)
+        neonForced = false
+    end
+end
+
 --- Undoes everything a visit left behind. Every exit runs this, so it uses natives and Whip.core only.
 ---@param revert boolean  take the previewed parts back off
 local function teardownLocal(revert)
@@ -302,6 +318,7 @@ local function teardownLocal(revert)
         if not ok then print(('[whip_autos] could not drop the tuning previews: %s'):format(tostring(err))) end
     end
     lightsForXenons(false)
+    neonForColour(false)
     bootOpened = false
     focusSlot = nil
 
@@ -468,6 +485,15 @@ function Session.revertSlot(slot)
         if type(c) == 'table' then SetVehicleTyreSmokeColor(vehicle, c.r or 255, c.g or 255, c.b or 255) end
         return
     end
+    if slot == 'neon' then
+        Catalogue.apply(vehicle, 'neon', ShopNeonLayout(originalProps.neonEnabled))
+        return
+    end
+    if slot == 'neoncolor' then
+        local c = originalProps.neonColor
+        if type(c) == 'table' then SetVehicleNeonLightsColour(vehicle, c.r or 255, c.g or 255, c.b or 255) end
+        return
+    end
 
     -- An extra: as the car came in (left alone when that was not recorded).
     local extra = ShopExtraOf(slot)
@@ -579,6 +605,7 @@ function Session.setFocus(s, slot)
 
         if engineScreen then holdStill(true) end
         lightsForXenons(slot == 22)
+        neonForColour(slot == 'neoncolor')
     end
 end
 

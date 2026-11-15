@@ -219,6 +219,32 @@ local function tintSlot(veh)
     return { key = 'tint', slot = 'tint', name = 'Window Tint', kind = 'tint', items = items }
 end
 
+--- Neon, as two lists: Neon Layout (Off, then SHOP_NEON_LAYOUTS) at Config.Neon.price, and Neon Colour
+--- (Config.Neon.colours) at its colourPrice.
+---@param veh number
+---@return table[]
+local function neonSlots(veh)
+    local lit = {}
+    for side = 0, 3 do lit[side + 1] = IsVehicleNeonLightEnabled(veh, side) and true or false end
+    local layout = ShopNeonLayout(lit)
+    local layouts = { { index = 0, name = 'Off', price = 0, fitted = layout == 0 } }
+    for _, l in ipairs(SHOP_NEON_LAYOUTS) do
+        layouts[#layouts + 1] = { index = l.index, name = l.name, price = Config.Neon.price, fitted = layout == l.index }
+    end
+
+    local r, g, b = GetVehicleNeonLightsColour(veh)
+    local colour = ShopNeonColourIndex({ r = r, g = g, b = b })
+    local colours = {}
+    for i, o in ipairs(Config.Neon.colours) do
+        colours[#colours + 1] = { index = i, name = o.name, price = Config.Neon.colourPrice, fitted = colour == i }
+    end
+
+    return {
+        { key = 'neon', slot = 'neon', name = 'Neon Layout', kind = 'list', items = layouts },
+        { key = 'neoncolor', slot = 'neoncolor', name = 'Neon Colour', kind = 'list', items = colours },
+    }
+end
+
 -- ============================================
 -- Wheels
 -- ============================================
@@ -383,6 +409,10 @@ function Catalogue.build(veh)
 
     local cosm = out.cosmetics or {}
     cosm[#cosm + 1] = tintSlot(veh)
+    -- Neon: cars only (GTA's own shop has none for motorbikes).
+    if IsThisModelACar(GetEntityModel(veh)) then
+        for _, c in ipairs(neonSlots(veh)) do cosm[#cosm + 1] = c end
+    end
     out.cosmetics = cosm
 
     -- Paint: every vehicle has colours.
@@ -516,7 +546,7 @@ end
 --- sees it — which is why every exit restores the stored look. Needs network control of the car
 --- (the session holds it).
 ---@param veh number
----@param slot number|string  mod slot id, 'tint', or a paint target id
+---@param slot number|string  mod slot id, 'tint', 'neon', 'neoncolor', or a paint target id
 ---@param index number
 ---@param wheelType number|nil  which wheel range `index` refers to; wheels only
 function Catalogue.apply(veh, slot, index, wheelType)
@@ -526,6 +556,17 @@ function Catalogue.apply(veh, slot, index, wheelType)
 
     if slot == 'tint' then
         SetVehicleWindowTint(veh, index)
+        return true
+    end
+
+    -- Neon: the layout's sides lit (ShopNeonSides), or their colour (SHOP_NEON_COLOUR).
+    if slot == 'neon' then
+        for side, on in ipairs(ShopNeonSides(index)) do SetVehicleNeonLightEnabled(veh, side - 1, on) end
+        return true
+    end
+    if slot == 'neoncolor' then
+        local c = SHOP_NEON_COLOUR[index]
+        if c then SetVehicleNeonLightsColour(veh, c.r, c.g, c.b) end
         return true
     end
 

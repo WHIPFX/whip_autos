@@ -48,6 +48,10 @@ local function orderOf(look)
                 ok = index >= 0 and index <= #SHOP_XENON_COLOUR
             elseif slot == 20 then
                 ok = index >= 0 and index <= #SHOP_SMOKE_COLOUR
+            elseif slot == 'neon' then
+                ok = index >= 0 and index <= 15   -- Off, or which of the four sides are lit
+            elseif slot == 'neoncolor' then
+                ok = index >= 1 and index <= #SHOP_NEON_COLOUR
             elseif ShopExtraOf(slot) then
                 ok = index == 0 or index == 1   -- an extra: off or on
             elseif type(slot) == 'number' then

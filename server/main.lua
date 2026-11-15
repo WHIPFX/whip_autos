@@ -117,6 +117,7 @@ local function buildLookups()
         for _, def in ipairs(list) do priceBySlot[def.id] = def.price end
     end
     priceBySlot['tint'] = Config.WindowTints.price
+    priceBySlot['neon'], priceBySlot['neoncolor'] = Config.Neon.price, Config.Neon.colourPrice
     -- The Extras shelf: 'extra1' to 'extra14', every switch one price (shared/shop.lua ShopExtraOf).
     for n = 1, SHOP_EXTRA_LAST do priceBySlot['extra' .. n] = (Config.Extras and Config.Extras.price) or 0 end
     for _, c in ipairs(Config.Colours) do VALID_COLOUR[c.index] = true end
@@ -124,7 +125,7 @@ local function buildLookups()
 end
 buildLookups()
 for _, path in ipairs({ 'Cosmetics', 'Wheels', 'Performance', 'Toggles', 'PaintTargets', 'PaintExtras',
-                        'Services', 'WindowTints', 'Colours', 'Extras' }) do
+                        'Services', 'WindowTints', 'Colours', 'Extras', 'Neon' }) do
     Whip.onConfigChanged(path, buildLookups)
 end
 
@@ -145,6 +146,7 @@ local MAX_WHEEL_TYPE = 12
 local function priceOf(slot, index, props)
     if index == -1 then return 0 end                          -- no part fitted
     if slot == 'tint' and index == 4 then return 0 end        -- stock glass
+    if slot == 'neon' and index == 0 then return 0 end        -- neon off
     if slot == 18 then                                        -- the turbo: each stage its own price, off free
         local s = PowerTurbo.stages[index]
         return s and s.price or 0
@@ -190,6 +192,11 @@ local function propsFromBasket(basket)
             props.smokeEnabled = index >= 1
             local c = index >= 1 and SHOP_SMOKE_COLOUR[index]
             if c then props.tyreSmoke = { r = c.r, g = c.g, b = c.b } end
+        elseif slot == 'neon' then
+            props.neonEnabled = ShopNeonSides(index)
+        elseif slot == 'neoncolor' then
+            local c = SHOP_NEON_COLOUR[index]
+            if c then props.neonColor = { r = c.r, g = c.g, b = c.b } end
         elseif ShopExtraOf(slot) then
             -- Merged into the car's own by SetVehicleAppearance: the other extras stay as they are.
             props.extras = props.extras or {}
@@ -286,7 +293,7 @@ local function onPurchase(source, player, vehicleId, method, basket, shown)
             goto nextLine
         end
 
-        -- 'tint' and the paint targets are named slots; anything else must be a mod slot number.
+        -- 'tint', 'neon', 'neoncolor' and the paint targets are named slots; anything else must be a mod slot number.
         if priceBySlot[slot] == nil then slot = tonumber(slot) end
 
         local ok = slot ~= nil and index ~= nil and priceBySlot[slot] ~= nil
@@ -307,6 +314,10 @@ local function onPurchase(source, player, vehicleId, method, basket, shown)
                 ok = index >= 0 and index <= #SHOP_XENON_COLOUR   -- Off, or one of the colours
             elseif slot == 20 then
                 ok = index >= 0 and index <= #SHOP_SMOKE_COLOUR   -- the same for tyre smoke
+            elseif slot == 'neon' then
+                ok = index >= 0 and index <= 15                    -- Off, or which of the four sides are lit
+            elseif slot == 'neoncolor' then
+                ok = index >= 1 and index <= #SHOP_NEON_COLOUR     -- one of the colours
             elseif ShopExtraOf(slot) then
                 ok = index == 0 or index == 1                      -- an extra: off or on
             else

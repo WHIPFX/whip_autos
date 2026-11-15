@@ -141,6 +141,8 @@ Whip.configPage({ label = 'Autos', groups = {
         price('TyreSmokeColours.colourPrice', 'Tyre smoke colour change', 'On a car that already has tyre smoke. Fitting it costs the Tyre Smoke price (On / off parts).'),
         price('XenonColours.colourPrice', 'Xenon colour change', 'On a car that already has xenons. Fitting them costs the Xenon Lights price.'),
         price('WindowTints.price', 'Window tint', 'Any tint but stock, which is free.'),
+        price('Neon.price', 'Neon kit', 'Any neon layout (front, back, sides and their mixes). Off is free. Cars only.'),
+        price('Neon.colourPrice', 'Neon colour', 'Changing the neon\'s colour.'),
         price('Extras.price', 'Extra switch', 'Switching one of a car\'s extras (light bars, roof racks, covers) on or off, on the Extras shelf. Only cars with extras show the shelf.'),
         priceList('PaintTargets', 'Paint', 'What each part of the car costs to paint.'),
         priceList('PaintExtras', 'On the paint shelf', 'The livery.'),

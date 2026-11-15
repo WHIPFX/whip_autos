@@ -117,6 +117,8 @@ Config.Areas = {
     [47] = 'sideskirt',      -- right door
     [48] = 'default',        -- livery
     [49] = 'roof',           -- light bar
+    neon       = 'default',      -- neon layout and colour: the whole car, low, so the glow under it shows
+    neoncolor  = 'default',
     -- Paint targets, by their ids.
     color1     = 'default',
     color2     = 'default',
@@ -256,6 +258,29 @@ Config.XenonColours = {
         { index = 10,  name = 'Hot Pink' },
         { index = 11,  name = 'Purple' },
         { index = 12,  name = 'Blacklight' },
+    },
+}
+
+--- Neon underglow, on the Cosmetics shelf as two lists (cars only, not motorbikes). Neon Layout picks which sides glow
+--- (GTA's seven layouts, or Off, which is free) for `price`; Neon Colour picks one of these colours (r, g, b) for
+--- `colourPrice`.
+Config.Neon = {
+    price       = 3000,
+    colourPrice = 750,
+    colours = {
+        { name = 'White',         r = 222, g = 222, b = 255 },
+        { name = 'Blue',          r = 2,   g = 21,  b = 255 },
+        { name = 'Electric Blue', r = 3,   g = 83,  b = 255 },
+        { name = 'Mint Green',    r = 0,   g = 255, b = 140 },
+        { name = 'Lime Green',    r = 94,  g = 255, b = 1   },
+        { name = 'Yellow',        r = 255, g = 255, b = 0   },
+        { name = 'Golden Shower', r = 255, g = 150, b = 0   },
+        { name = 'Orange',        r = 255, g = 62,  b = 0   },
+        { name = 'Red',           r = 255, g = 1,   b = 1   },
+        { name = 'Pony Pink',     r = 255, g = 50,  b = 100 },
+        { name = 'Hot Pink',      r = 255, g = 5,   b = 190 },
+        { name = 'Purple',        r = 35,  g = 1,   b = 255 },
+        { name = 'Blacklight',    r = 15,  g = 3,   b = 255 },
     },
 }
 

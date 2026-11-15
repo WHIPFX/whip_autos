@@ -27,20 +27,75 @@ end
 --- here as { r, g, b }.
 SHOP_SMOKE_COLOUR = {}
 
+--- Neon Colour (slot 'neoncolor'): 1.. is Config.Neon.colours[n], kept here as { r, g, b }.
+SHOP_NEON_COLOUR = {}
+
 local function buildPaintProps() refill(SHOP_PAINT_PROP, Config.PaintTargets, function(t, _, x) t[x.id] = x.prop end) end
 local function buildServices() refill(SHOP_SERVICES, Config.Services, function(t, _, x) t[x.id] = true end) end
 local function buildXenons() refill(SHOP_XENON_COLOUR, Config.XenonColours.options, function(t, i, x) t[i] = x.index end) end
 local function buildSmokes()
     refill(SHOP_SMOKE_COLOUR, Config.TyreSmokeColours.options, function(t, i, x) t[i] = { r = x.r, g = x.g, b = x.b } end)
 end
+local function buildNeons()
+    refill(SHOP_NEON_COLOUR, Config.Neon.colours, function(t, i, x) t[i] = { r = x.r, g = x.g, b = x.b } end)
+end
 buildPaintProps()
 buildServices()
 buildXenons()
 buildSmokes()
+buildNeons()
 Whip.onConfigChanged('PaintTargets', buildPaintProps)
 Whip.onConfigChanged('Services', buildServices)
 Whip.onConfigChanged('XenonColours.options', buildXenons)
 Whip.onConfigChanged('TyreSmokeColours.options', buildSmokes)
+Whip.onConfigChanged('Neon.colours', buildNeons)
+
+--- Neon Layout (slot 'neon'): which of the car's four neon tubes are lit, as bits of its index: 1 left, 2 right,
+--- 4 front, 8 back (GTA's sides 0 to 3). 0 is Off. These are the layouts the shop sells; any other mix a car carries
+--- still reads right.
+SHOP_NEON_LAYOUTS = {
+    { index = 4,  name = 'Front' },
+    { index = 8,  name = 'Back' },
+    { index = 3,  name = 'Sides' },
+    { index = 12, name = 'Front and Back' },
+    { index = 7,  name = 'Front and Sides' },
+    { index = 11, name = 'Back and Sides' },
+    { index = 15, name = 'Front, Back and Sides' },
+}
+
+--- The Neon Layout index of a car's lit sides (whip_core stores `neonEnabled` as { left, right, front, back }).
+---@param sides table|nil
+---@return integer
+function ShopNeonLayout(sides)
+    local bits = 0
+    if type(sides) == 'table' then
+        for side = 0, 3 do
+            if sides[side + 1] == true or sides[side + 1] == 1 then bits = bits | (1 << side) end
+        end
+    end
+    return bits
+end
+
+--- A Neon Layout index as the sides to store: { left, right, front, back }.
+---@param index integer
+---@return boolean[]
+function ShopNeonSides(index)
+    local bits = math.tointeger(index) or 0
+    local sides = {}
+    for side = 0, 3 do sides[side + 1] = (bits & (1 << side)) ~= 0 end
+    return sides
+end
+
+--- The Neon Colour entry a car's neon colour reads as: 0 when the list does not name it.
+---@param rgb table|nil  { r, g, b }, as whip_core stores `neonColor`
+---@return integer
+function ShopNeonColourIndex(rgb)
+    if type(rgb) ~= 'table' then return 0 end
+    for i, c in ipairs(SHOP_NEON_COLOUR) do
+        if c.r == rgb.r and c.g == rgb.g and c.b == rgb.b then return i end
+    end
+    return 0
+end
 
 --- The Livery shelf holds both kinds of livery, under slot 48. A MOD livery (the car's mod kit) is its
 --- slot-48 index, -1 none. A MODEL livery (SetVehicleLivery: designs in the car's own textures, which
@@ -149,6 +204,8 @@ function ShopFitted(props, line, turboIndex)
     if field then return props[field] == index end
     if slot == 22 then return ShopXenonIndex(props.xenon, props.headlightColor) == index end
     if slot == 20 then return ShopSmokeIndex(props.smokeEnabled, props.tyreSmoke) == index end
+    if slot == 'neon' then return ShopNeonLayout(props.neonEnabled) == index end
+    if slot == 'neoncolor' then return ShopNeonColourIndex(props.neonColor) == index end
 
     -- An extra the record does not mention is not "fitted": switching it is sold.
     local extra = ShopExtraOf(slot)

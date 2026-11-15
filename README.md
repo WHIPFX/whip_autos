@@ -8,8 +8,8 @@ The shop building in Burton is a separate resource, [whip_autos_shop](https://gi
 
 ## Features
 
-- **Looks.** Body parts (Benny's included), wheels from 13 ranges, tyre smoke, xenon lights, window tint, extras,
-  liveries, and every GTA paint, the colour-shifting Chameleon paints included.
+- **Looks.** Body parts (Benny's included), wheels from 13 ranges, tyre smoke, xenon lights, neon underglow, window
+  tint, extras, liveries, and every GTA paint, the colour-shifting Chameleon paints included.
 - **Performance.** Engine, brakes, transmission, suspension and armour upgrades, and a turbo sold in stages from
   5 to 30 psi.
 - **Tuning.** Engine swaps from other vehicles, stance (ride height, track, camber, wheel size and width),
