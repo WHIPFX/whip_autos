@@ -8,7 +8,7 @@ Config = {}
 --- the F1 wheel. Keep the radius small: a car still driving in through the doorway (about 6 m away) should not count.
 Config.Shop = {
     label   = 'Whiplash',
-    coords  = vector3(-344.868, -113.953, 37.697),
+    coords  = vector3(-336.23, -116.73, 38.70),
     radius  = 3.0,
 
     -- Pink floor marker. Decoration only; when false its per-frame thread never starts.
