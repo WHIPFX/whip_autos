@@ -468,6 +468,9 @@ local function forgetGone()
     end
 end
 
+--- A stanced car in FrameRange but off screen is looked at every this many frames, not every frame.
+local OFFSCREEN_EVERY = 4
+
 -- The one loop for every tuned car in the world: refresh twice a second, per frame only while a car in
 -- range needs it, five times a second while the shop previews a stance, sweep every five seconds.
 CreateThread(function()
@@ -503,8 +506,13 @@ CreateThread(function()
                         q.skip = q.skip - 1
                     elseif not DoesEntityExist(entity) then
                         _drawn[entity] = nil   -- its _quiet entry goes in forgetGone's sweep
+                    elseif not IsEntityOnScreen(entity) then
+                        -- Off screen: nothing to see, so looked at again only every OFFSCREEN_EVERY frames (a car
+                        -- turned into view is fixed within a few frames, and GTA resets the offsets only occasionally).
+                        q.since = nil
+                        q.skip = OFFSCREEN_EVERY - 1
                     else
-                        if IsEntityOnScreen(entity) then
+                        do
                             local held = true
                             -- The ride height and rims of the car this player drives, put back the frame GTA
                             -- resets them (lastingMoved).
