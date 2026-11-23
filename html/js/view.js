@@ -1856,7 +1856,7 @@ class BasketDialog extends Dialog {
                 c.moveTo(cx - 14, cy + 14); c.lineTo(cx + 14, cy + 14);
             }
             c.stroke();
-            const words = { cash: ['Cash', 'From your pockets'], bank: ['Bank', 'Your default account'],
+            const words = { cash: ['Cash', 'From your pockets or wallet'], bank: ['Bank', 'Your default account'],
                             save: ['Save', 'The car spawns like this'],
                             free: ['Free', 'Developer mode'] }[kind];
             text(c, words[0], 100, cy - 10, { size: 28, weight: 700, color: COL.text, display: true });
