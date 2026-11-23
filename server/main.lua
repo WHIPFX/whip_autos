@@ -164,6 +164,14 @@ end
 
 -- Money goes through whip_core's ChargePlayer / RefundPlayer (in onPurchase), never by hand.
 
+--- The cash a payment can take: loose notes and what their wallets hold (whip_core's GetSpendableCash, as the charge
+--- counts it), or the loose notes alone on a whip_core without it.
+local function spendableCash(source)
+    local ok, n = pcall(function() return exports.whip_core:GetSpendableCash(source) end)
+    if ok and tonumber(n) then return tonumber(n) end
+    return tonumber((exports.whip_core:GetPlayerCash(source))) or 0
+end
+
 --- Turns a validated basket into the appearance to store, from slots and indices only.
 ---@param basket table
 ---@return table props
@@ -548,12 +556,12 @@ local function RegisterWithWhip()
         },
     }, onPurchase)
 
-    -- The player's cash for the basket bubble: the first figure on open, and re-checks. Every change is
-    -- also pushed as it happens (cashMoved). A refusal just keeps the page's last figure.
+    -- The player's cash for the basket bubble, wallets included: the first figure on open, and re-checks. Every
+    -- change is also pushed as it happens (cashMoved). A refusal just keeps the page's last figure.
     exports.whip_core:SecureCallback('whip_autos:cash', {
         rateLimit = 500, burst = 2,
     }, function(source)
-        return (exports.whip_core:GetPlayerCash(source))
+        return spendableCash(source)
     end)
 
     showBlip()
@@ -606,13 +614,14 @@ AddEventHandler('whip_core:vehicle:entered', function(e)
     if e.seat ~= -1 then leftTheWheel(e) end
 end)
 
---- A shopper's cash moved (whip_core's item events, any route): push the new count to their page.
+--- A shopper's cash moved (whip_core's item events, any route): push the new count to their page, counted again with
+--- the wallets (the event's `count` is the loose notes alone).
 ---@param e table  { source, item, amount, count, reason, by }
 local function cashMoved(e)
     if e.item ~= 'cash' then return end
     for _, s in pairs(sessions) do
         if s.source == e.source then
-            TriggerClientEvent('whip_autos:client:cash', e.source, e.count)
+            TriggerClientEvent('whip_autos:client:cash', e.source, spendableCash(e.source))
             return
         end
     end
